@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>うすい塩酸の電池モデル｜中3理科 単元1-3 図4</title>
+<meta property="og:title" content="うすい塩酸の電池モデル｜中3理科">
+<meta property="og:description" content="教科書 p.51 図4 の電池モデル。亜鉛板＋銅板＋うすい塩酸で電子の流れと水素発生を可視化。電圧が下がる「問題点」を体感し、ダニエル電池への必然性を理解できる導入教材。">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Kaisei+Decol:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+<style>
+:root {
+  --bg: #FAF6E8;
+  --paper: #FFFBF0;
+  --ink: #3A3530;
+  --accent: #D97A4B;
+  --accent2: #4A7BAA;
+  --zinc: #B0B4B8;
+  --copper: #C97D4A;
+  --hcl: #FFFBF0;
+  --bubble: rgba(240, 248, 255, 0.85);
+  --warn: #D9533C;
+  --grid: rgba(180, 160, 120, 0.12);
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'M PLUS Rounded 1c', system-ui, sans-serif;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  min-height: 100vh;
+}
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 6px 20px 16px;
+}
+.explainer-toggles {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.explainer-toggle-btn {
+  background: #fff;
+  border: 2px solid;
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.explainer-toggle-btn.minus { border-color: #4A7BAA; color: #4A7BAA; box-shadow: 2px 2px 0 #4A7BAA; }
+.explainer-toggle-btn.plus { border-color: #D97A4B; color: #D97A4B; box-shadow: 2px 2px 0 #D97A4B; }
+.explainer-toggle-btn:hover { transform: translate(-1px, -1px); }
+.explainer-toggle-btn.minus.active { background: #4A7BAA; color: #fff; }
+.explainer-toggle-btn.plus.active { background: #D97A4B; color: #fff; }
+.stage { position: relative; }
+.overlay-explainer {
+  position: absolute;
+  top: 14px;
+  width: 320px;
+  max-width: 40%;
+  max-height: calc(100% - 28px);
+  background: rgba(255, 251, 240, 0.97);
+  border: 2px solid #EADFC4;
+  border-radius: 14px;
+  padding: 14px 16px 14px 16px;
+  display: none;
+  z-index: 10;
+  overflow-y: auto;
+  box-shadow: 0 6px 20px rgba(120, 100, 80, 0.18);
+  backdrop-filter: blur(2px);
+}
+.overlay-explainer.minus { border-left: 5px solid #4A7BAA; left: 14px; }
+.overlay-explainer.plus { border-left: 5px solid #D97A4B; right: 14px; }
+.overlay-explainer.show { display: block; animation: pop-in 0.18s ease-out; }
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.overlay-explainer .close-btn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #8a7a60;
+  padding: 2px 6px;
+  line-height: 1;
+}
+.overlay-explainer .close-btn:hover { color: #444; }
+.overlay-explainer h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.overlay-explainer.minus h3 { color: #4A7BAA; }
+.overlay-explainer.plus h3 { color: #D97A4B; }
+.overlay-explainer .textbook-svg {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  display: block;
+  margin: 4px auto 8px auto;
+  background: #FFFBF0;
+  border-radius: 10px;
+  padding: 6px;
+  box-sizing: border-box;
+}
+.textbook-body {
+  line-height: 1.85;
+  font-size: 13px;
+  margin: 6px 0;
+  text-align: justify;
+}
+.textbook-body p { margin: 6px 0; }
+.overlay-explainer .panel-rx {
+  background: #FFFBF0;
+  border-left: 3px solid;
+  padding: 6px 10px;
+  margin: 8px 0;
+  font-family: 'Kaisei Decol', serif;
+  font-size: 13px;
+}
+.overlay-explainer.minus .panel-rx { border-color: #4A7BAA; }
+.overlay-explainer.plus .panel-rx { border-color: #D97A4B; }
+.overlay-explainer .sub-detail {
+  margin-top: 8px;
+  border-top: 1px dashed #d0c0a0;
+  padding-top: 6px;
+}
+.overlay-explainer .sub-detail summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+  color: #8a6a40;
+  user-select: none;
+  list-style: none;
+}
+.overlay-explainer .sub-detail summary::-webkit-details-marker { display: none; }
+.overlay-explainer .sub-detail summary::before { content: '▶ '; font-size: 10px; display: inline-block; }
+.overlay-explainer .sub-detail[open] summary::before { content: '▼ '; }
+.overlay-explainer .sub-detail .detail-body {
+  padding: 6px 0 0 0;
+  font-size: 12px;
+  line-height: 1.75;
+}
+.overlay-explainer .sub-detail .detail-body p { margin: 4px 0; }
+.overlay-explainer .sub-detail .detail-body .key-point {
+  background: #FFEBD0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin: 4px 0;
+  font-size: 11px;
+}
+header.title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+  border-bottom: 2px dashed var(--accent);
+  padding-bottom: 2px;
+}
+header.title h1 {
+  font-size: 18px;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+header.title .sub {
+  font-size: 13px;
+  color: #8a7a60;
+  font-family: 'Kaisei Decol', serif;
+}
+.stage {
+  background: var(--paper);
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: 0 3px 10px rgba(120, 100, 80, 0.08);
+  border: 2px solid #EADFC4;
+  position: relative;
+}
+#canvas-host {
+  width: 100%;
+  display: block;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  background: var(--paper);
+  border-radius: 12px;
+  padding: 6px 12px;
+  border: 2px solid #EADFC4;
+}
+.mode-toggle {
+  display: inline-flex;
+  background: #F0E6CC;
+  border-radius: 999px;
+  padding: 4px;
+  gap: 4px;
+}
+.mode-toggle button {
+  background: transparent;
+  border: none;
+  padding: 8px 18px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #8a7a60;
+}
+.mode-toggle button.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(217, 122, 75, 0.3);
+}
+.btn {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+.btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 2px 2px 0 #8C4A28; }
+.btn.primary:hover { box-shadow: 3px 3px 0 #8C4A28; }
+.btn.primary:active { box-shadow: 1px 1px 0 #8C4A28; }
+.btn.polish {
+  background: #FFF6E6;
+  border-color: #BFAE85;
+  color: #8C5A1A;
+  box-shadow: 2px 2px 0 #BFAE85;
+}
+.btn.polish:hover { box-shadow: 3px 3px 0 #BFAE85; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: 2px 2px 0 var(--ink); }
+.slider-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6a5a40;
+}
+input[type="range"] {
+  width: 130px;
+  accent-color: var(--accent);
+}
+.charge-bar-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6a5a40;
+}
+.charge-bar {
+  width: 110px;
+  height: 12px;
+  background: #ECE3CC;
+  border-radius: 999px;
+  border: 1.5px solid #BFAE85;
+  overflow: hidden;
+  position: relative;
+}
+#charge-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #E8A040 0%, #5FA8D8 60%, #4CB780 100%);
+  transition: width 0.18s ease;
+  border-radius: 999px;
+}
+.depleted-note {
+  margin-top: 8px;
+  background: #FFEFE6;
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #6a4a30;
+  font-weight: 500;
+  display: none;
+}
+.depleted-note.show { display: block; }
+.observation {
+  margin-top: 8px;
+  background: var(--paper);
+  border: 2px solid #EADFC4;
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+.observation h3 {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  color: #6a5a40;
+  letter-spacing: 0.04em;
+}
+.observation .hint {
+  font-size: 11px;
+  color: #9a8a70;
+  margin-left: 8px;
+  font-weight: 500;
+}
+.obs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 6px;
+}
+.obs-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: #FFFBF0;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #5a4a30;
+  user-select: none;
+  transition: background 0.12s, border-color 0.12s;
+}
+.obs-item:hover { background: #FFF6E6; }
+.obs-item.active {
+  background: #FFE9B8;
+  border-color: var(--accent);
+  font-weight: 800;
+  color: #6a4a20;
+}
+.obs-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  margin: 0;
+  cursor: pointer;
+}
+.obs-item .obs-label { flex: 1; }
+.step-info {
+  margin-top: 8px;
+  background: #FFF4E0;
+  border: 2px dashed var(--accent);
+  border-radius: 12px;
+  padding: 8px 14px;
+  display: none;
+}
+.step-info.active { display: block; }
+.step-info.problem { background: #FFE5DC; border-color: var(--warn); }
+.step-info .step-no {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  margin-right: 8px;
+}
+.step-info.problem .step-no { background: var(--warn); }
+.step-info .step-title {
+  font-size: 17px;
+  font-weight: 800;
+  display: inline;
+}
+.step-info .step-desc {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4a4035;
+  white-space: pre-wrap;
+}
+.step-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  gap: 10px;
+}
+.step-counter {
+  font-size: 13px;
+  color: #8a7a60;
+  font-weight: 700;
+}
+.reactions {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.rx {
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 6px 12px;
+  border-left: 5px solid;
+  font-family: 'Kaisei Decol', serif;
+  font-size: 14px;
+}
+.rx.minus { border-color: var(--accent2); }
+.rx.plus { border-color: var(--copper); }
+.rx .label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #8a7a60;
+  display: block;
+  margin-bottom: 4px;
+}
+sub, sup { font-size: 0.7em; }
+
+/* ダニエル電池接続パネル */
+.next-card {
+  margin-top: 14px;
+  background: linear-gradient(135deg, #FFF6E6 0%, #FFEFE0 100%);
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  padding: 14px 18px;
+  box-shadow: 0 4px 12px rgba(217, 122, 75, 0.12);
+}
+.next-card .next-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #8C4A28;
+  margin-bottom: 8px;
+}
+.next-card blockquote {
+  background: #FFFBF0;
+  border-left: 4px solid #BFAE85;
+  margin: 8px 0;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  color: #6a5a40;
+  border-radius: 6px;
+  font-family: 'Kaisei Decol', serif;
+  line-height: 1.75;
+}
+.next-card .compare {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0 12px;
+  font-size: 13px;
+  background: #FFFBF0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.next-card .compare th, .next-card .compare td {
+  padding: 6px 10px;
+  border: 1px solid #EADFC4;
+  text-align: left;
+}
+.next-card .compare thead th {
+  background: #F5E8C8;
+  color: #6a4a20;
+  font-weight: 800;
+}
+.next-card .compare tbody th {
+  background: #FFF6E6;
+  color: #6a5a40;
+  width: 22%;
+  font-weight: 700;
+}
+.next-card .compare td:nth-child(2) {
+  background: #FFEFE6;
+  color: #8C4A28;
+}
+.next-card .compare td:nth-child(3) {
+  background: #E8F4F0;
+  color: #2A6A55;
+}
+.next-card .next-link {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 2px 2px 0 #8C4A28;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.next-card .next-link:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #8C4A28;
+}
+.next-card .next-link:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #8C4A28;
+}
+
+.explainer {
+  margin-top: 6px;
+  background: #FFF6E6;
+  border: 2px dashed #D9A35A;
+  border-radius: 10px;
+  font-size: 13px;
+}
+.explainer summary {
+  cursor: pointer;
+  padding: 6px 14px;
+  font-weight: 800;
+  color: #8C5A1A;
+  list-style: none;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.explainer summary::-webkit-details-marker { display: none; }
+.explainer summary::after {
+  content: '▼';
+  transition: transform 0.2s;
+  color: #C97D4A;
+  font-size: 11px;
+}
+.explainer[open] summary::after { transform: rotate(180deg); }
+.explainer-body {
+  padding: 4px 16px 14px 16px;
+  color: #5a4a30;
+  line-height: 1.8;
+}
+.explainer-body p { margin: 6px 0; }
+.explainer-body .advanced {
+  background: #FFF;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6a5a40;
+  border: 1px dashed #BFAE85;
+}
+
+.notes {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #8a7a60;
+  line-height: 1.6;
+}
+.notes a { color: var(--accent2); }
+
+@media (max-width: 720px) {
+  .reactions { grid-template-columns: 1fr; }
+  .btn { padding: 7px 14px; font-size: 13px; }
+}
+@media (max-width: 600px) {
+  .wrap { padding: 6px 8px 16px; }
+  header.title { flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+  header.title h1 { font-size: 16px; }
+  header.title .sub { font-size: 10px; }
+  .explainer-toggles { flex-direction: column; gap: 4px; margin-bottom: 4px; }
+  .explainer-toggle-btn { width: 100%; font-size: 12px; padding: 7px 10px; box-sizing: border-box; }
+  .stage { padding: 3px; border-radius: 10px; }
+  .controls { flex-direction: column; align-items: stretch; gap: 6px; padding: 8px; }
+  .mode-toggle { width: 100%; justify-content: center; }
+  .mode-toggle button { flex: 1; }
+  .charge-bar-wrap, .slider-wrap { justify-content: space-between; width: 100%; }
+  .charge-bar { flex: 1; min-width: 60px; }
+  input[type="range"] { flex: 1; width: auto; min-width: 0; }
+  .btn { width: 100%; box-sizing: border-box; }
+  .obs-list { grid-template-columns: 1fr 1fr; gap: 4px; }
+  .obs-item { font-size: 11px; padding: 4px 8px; }
+  .overlay-explainer {
+    position: fixed !important;
+    top: 4% !important;
+    left: 4% !important;
+    right: 4% !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: 92vh !important;
+    z-index: 1000;
+  }
+  .overlay-explainer.plus { left: 4% !important; right: 4% !important; }
+  .depleted-note { font-size: 12px; padding: 8px 12px; }
+  .next-card { padding: 10px 12px; }
+  .next-card .compare { font-size: 11.5px; }
+  .next-card .compare th, .next-card .compare td { padding: 4px 6px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="title">
+    <h1>⚡ うすい塩酸の電池モデル（図4）</h1>
+    <span class="sub">中3 理科 ／ 単元1-3 化学変化と電池</span>
+  </header>
+
+  <div class="explainer-toggles">
+    <button class="explainer-toggle-btn minus" id="toggle-minus">🔋 (-)極（亜鉛側）の説明</button>
+    <button class="explainer-toggle-btn plus" id="toggle-plus">🔋 (+)極（銅側）の説明</button>
+  </div>
+
+  <div class="stage">
+    <div id="canvas-host"></div>
+
+    <div class="overlay-explainer minus" id="overlay-minus">
+      <button class="close-btn" data-overlay="minus" aria-label="閉じる">×</button>
+      <h3>🔋 (-)極（亜鉛側）</h3>
+      <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg" class="textbook-svg" aria-label="(-)極の反応の図解">
+        <text x="100" y="14" text-anchor="middle" fill="#4A7BAA" font-size="11" font-weight="700">電子が銅板へ向かって移動する</text>
+        <line x1="100" y1="22" x2="100" y2="38" stroke="#4A7BAA" stroke-width="2.5"/>
+        <polygon points="100,20 95,30 105,30" fill="#4A7BAA"/>
+        <path d="M 22 95 L 22 270 Q 22 282 34 282 L 166 282 Q 178 282 178 270 L 178 95 Z" fill="#FFFBE8" stroke="#6a6a6a" stroke-width="1.8"/>
+        <rect x="24" y="97" width="152" height="28" fill="#FAFAF0"/>
+        <line x1="24" y1="125" x2="176" y2="125" stroke="#a0b0bc" stroke-width="1" stroke-dasharray="2,2"/>
+        <rect x="86" y="40" width="28" height="220" fill="#9CA0A4" stroke="#5a5a5a" stroke-width="1.2"/>
+        <text x="100" y="160" text-anchor="middle" fill="#222" font-weight="800" font-size="14">Zn</text>
+        <g>
+          <circle cx="100" cy="60" r="6.5" fill="#4A7BAA"/><text x="100" y="64" text-anchor="middle" fill="#fff" font-size="10" font-weight="800">−</text>
+          <circle cx="100" cy="80" r="6.5" fill="#4A7BAA"/><text x="100" y="84" text-anchor="middle" fill="#fff" font-size="10" font-weight="800">−</text>
+          <circle cx="100" cy="100" r="6.5" fill="#4A7BAA"/><text x="100" y="104" text-anchor="middle" fill="#fff" font-size="10" font-weight="800">−</text>
+        </g>
+        <circle cx="138" cy="155" r="12" fill="#E8A040"/><text x="138" y="158" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">Zn²⁺</text>
+        <circle cx="148" cy="200" r="12" fill="#E8A040" opacity="0.9"/><text x="148" y="203" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">Zn²⁺</text>
+        <circle cx="134" cy="235" r="12" fill="#E8A040" opacity="0.75"/><text x="134" y="238" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">Zn²⁺</text>
+        <line x1="116" y1="155" x2="125" y2="155" stroke="#C97D4A" stroke-width="2"/>
+        <polygon points="128,155 122,151 122,159" fill="#C97D4A"/>
+        <text x="78" y="172" text-anchor="end" fill="#C97D4A" font-size="10.5" font-weight="700">亜鉛が</text>
+        <text x="78" y="186" text-anchor="end" fill="#C97D4A" font-size="10.5" font-weight="700">とける</text>
+        <line x1="80" y1="180" x2="85" y2="180" stroke="#C97D4A" stroke-width="2"/>
+        <polygon points="88,180 82,177 82,183" fill="#C97D4A"/>
+        <text x="100" y="297" text-anchor="middle" fill="#6a5a40" font-size="10" font-weight="600">うすい塩酸（HCl水溶液）</text>
+      </svg>
+      <div class="textbook-body">
+        <p>−極の亜鉛(Zn)板の表面では、亜鉛原子が電子を2個失って亜鉛イオン(Zn²⁺)となり、うすい塩酸の中にとけ出していく。電極に残された電子は、導線を通って+極の銅板へ向かって移動する。</p>
+      </div>
+      <div class="panel-rx">Zn → Zn²⁺ + 2e⁻</div>
+      <details class="sub-detail">
+        <summary>もっと詳しく</summary>
+        <div class="detail-body">
+          <p>この反応を <strong>酸化反応</strong>（電子を失う反応）という。</p>
+          <p>金属のイオンへのなりやすさを <strong>イオン化傾向</strong> という。Zn ＞ Cu なので亜鉛のほうがイオンになりやすく、亜鉛が溶けて電子が残される。</p>
+          <p>うすい塩酸の中には H⁺ と Cl⁻ が存在する。亜鉛がとけて出てきた Zn²⁺ は液中に広がる。</p>
+          <div class="key-point">📍 テスト頻出：「(-)極で何が起きる？」→ 亜鉛が溶けて Zn²⁺ になり、電子を残す。</div>
+          <p>📖 教科書 p.50</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="overlay-explainer plus" id="overlay-plus">
+      <button class="close-btn" data-overlay="plus" aria-label="閉じる">×</button>
+      <h3>🔋 (+)極（銅側）</h3>
+      <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg" class="textbook-svg" aria-label="(+)極の反応の図解">
+        <text x="100" y="14" text-anchor="middle" fill="#4A7BAA" font-size="11" font-weight="700">導線から電子が送られてくる</text>
+        <line x1="100" y1="22" x2="100" y2="38" stroke="#4A7BAA" stroke-width="2.5"/>
+        <polygon points="100,40 95,30 105,30" fill="#4A7BAA"/>
+        <path d="M 22 95 L 22 270 Q 22 282 34 282 L 166 282 Q 178 282 178 270 L 178 95 Z" fill="#FFFBE8" stroke="#6a6a6a" stroke-width="1.8"/>
+        <rect x="24" y="97" width="152" height="28" fill="#FAFAF0"/>
+        <line x1="24" y1="125" x2="176" y2="125" stroke="#a0b0bc" stroke-width="1" stroke-dasharray="2,2"/>
+        <rect x="86" y="40" width="28" height="220" fill="#C97D4A" stroke="#7a4520" stroke-width="1.2"/>
+        <text x="100" y="160" text-anchor="middle" fill="#fff" font-weight="800" font-size="14">Cu</text>
+        <g>
+          <circle cx="100" cy="60" r="6.5" fill="#4A7BAA"/><text x="100" y="64" text-anchor="middle" fill="#fff" font-size="10" font-weight="800">−</text>
+          <circle cx="100" cy="80" r="6.5" fill="#4A7BAA"/><text x="100" y="84" text-anchor="middle" fill="#fff" font-size="10" font-weight="800">−</text>
+          <circle cx="100" cy="100" r="6.5" fill="#4A7BAA"/><text x="100" y="104" text-anchor="middle" fill="#fff" font-size="10" font-weight="800">−</text>
+        </g>
+        <circle cx="62" cy="155" r="11" fill="#A8D8F0" stroke="#4A7BAA" stroke-width="1"/><text x="62" y="158" text-anchor="middle" fill="#1f6ea0" font-size="9" font-weight="800">H⁺</text>
+        <circle cx="56" cy="200" r="11" fill="#A8D8F0" stroke="#4A7BAA" stroke-width="1"/><text x="56" y="203" text-anchor="middle" fill="#1f6ea0" font-size="9" font-weight="800">H⁺</text>
+        <line x1="75" y1="155" x2="84" y2="155" stroke="#1f6ea0" stroke-width="2"/>
+        <polygon points="87,155 81,151 81,159" fill="#1f6ea0"/>
+        <circle cx="138" cy="80" r="9" fill="#fff" stroke="#90a8b0" stroke-width="1.4" opacity="0.9"/>
+        <circle cx="148" cy="60" r="11" fill="#fff" stroke="#90a8b0" stroke-width="1.4" opacity="0.95"/>
+        <circle cx="130" cy="55" r="7" fill="#fff" stroke="#90a8b0" stroke-width="1.4" opacity="0.85"/>
+        <text x="158" y="60" text-anchor="start" fill="#5a7a90" font-size="9" font-weight="700">H₂</text>
+        <text x="160" y="190" text-anchor="start" fill="#1f6ea0" font-size="10.5" font-weight="700">水素気泡</text>
+        <text x="160" y="204" text-anchor="start" fill="#1f6ea0" font-size="10.5" font-weight="700">が発生</text>
+        <line x1="158" y1="198" x2="153" y2="198" stroke="#1f6ea0" stroke-width="2"/>
+        <polygon points="150,198 156,195 156,201" fill="#1f6ea0"/>
+        <text x="100" y="297" text-anchor="middle" fill="#6a5a40" font-size="10" font-weight="600">うすい塩酸（HCl水溶液）</text>
+      </svg>
+      <div class="textbook-body">
+        <p>+極の銅(Cu)板の表面では、水溶液中の水素イオン(H⁺)が、導線から移動してくる電子を1個受けとって水素原子となる。水素原子は2個結びついて水素分子となり、気体(水素)となって、+極の表面から空気中に出ていく。</p>
+      </div>
+      <div class="panel-rx">2H⁺ + 2e⁻ → (2H) → H₂</div>
+      <details class="sub-detail">
+        <summary>もっと詳しく</summary>
+        <div class="detail-body">
+          <p>この反応を <strong>還元反応</strong>（電子を受け取る反応）という。(-)極の酸化と(+)極の還元が同時に起きて、はじめて電池として働く。</p>
+          <p>銅板自体は変化しない。電子の <strong>受け渡し場所</strong> として働いているだけ。</p>
+          <p>発生した水素は <strong>可燃性の気体</strong>。火をつけると爆発的に燃える危険があるため、実際の実験では火気厳禁。</p>
+          <div class="key-point">📍 テスト頻出：「(+)極で何が起きる？」→ H⁺ が電子を受け取って水素(H₂)になり、気泡として発生。</div>
+          <p>📖 教科書 p.51</p>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="mode-toggle" role="tablist" aria-label="再生モード">
+      <button id="mode-auto" class="active" role="tab" aria-selected="true">▶ 自動再生</button>
+      <button id="mode-step" role="tab" aria-selected="false">📖 ステップ実行</button>
+    </div>
+
+    <div id="auto-controls" style="display: contents;">
+      <button id="play-btn" class="btn primary">▶ 動かす</button>
+      <div class="charge-bar-wrap" title="電池残量">
+        <span class="charge-label">残量</span>
+        <div class="charge-bar"><div id="charge-bar-fill"></div></div>
+        <span id="charge-percent">100%</span>
+      </div>
+      <div class="slider-wrap">
+        <span>速さ</span>
+        <input type="range" id="speed" min="0.25" max="2" step="0.25" value="1">
+        <span id="speed-label">×1.0</span>
+      </div>
+      <button id="polish-btn" class="btn polish" title="銅板に張り付いた水素気泡を取り除く（実験で実際にやる操作）">🧽 銅板を磨く</button>
+      <button id="reset-btn" class="btn" title="うすい塩酸や金属板を新しくする">↻ 新しくする</button>
+    </div>
+
+    <div id="step-controls" style="display: none; gap: 10px; align-items: center;">
+      <button id="prev-step" class="btn">← 前へ</button>
+      <span class="step-counter" id="step-counter">1 / 7</span>
+      <button id="next-step" class="btn primary">次へ →</button>
+    </div>
+  </div>
+
+  <div class="depleted-note" id="depleted-note">
+    🔋 <strong>電池が消耗しました。</strong>気泡が銅板を覆って電圧が下がりきりました。<strong>銅板を磨く</strong>と一時的に回復しますが、本質的な解決はダニエル電池（次の単元）で実現します。↻ 新しくする でリセット。
+  </div>
+
+  <div class="observation">
+    <h3>✏️ 観察ポイント <span class="hint">クリックで該当箇所をハイライト／チェックで観察済み</span></h3>
+    <ul class="obs-list">
+      <li class="obs-item" data-target="wire"><input type="checkbox"><span class="obs-label">電子の向きを確認（−極→+極）</span></li>
+      <li class="obs-item" data-target="zn"><input type="checkbox"><span class="obs-label">亜鉛板がやせ細る（Zn²⁺ がとけ出す）</span></li>
+      <li class="obs-item" data-target="cu"><input type="checkbox"><span class="obs-label">銅板から水素気泡（H₂）が出る</span></li>
+      <li class="obs-item" data-target="stuck"><input type="checkbox"><span class="obs-label">気泡が銅板に張り付く</span></li>
+      <li class="obs-item" data-target="voltmeter"><input type="checkbox"><span class="obs-label">電圧が下がっていく（不安定）</span></li>
+      <li class="obs-item" data-target="liquid"><input type="checkbox"><span class="obs-label">うすい塩酸（H⁺・Cl⁻）</span></li>
+    </ul>
+  </div>
+
+  <div class="step-info" id="step-info">
+    <span class="step-no" id="step-no">STEP 1</span>
+    <span class="step-title" id="step-title">装置の構成</span>
+    <div class="step-desc" id="step-desc"></div>
+  </div>
+
+  <div class="reactions">
+    <div class="rx minus">
+      <span class="label">(-)極 ／ 亜鉛側</span>
+      Zn → Zn<sup>2+</sup> + 2e<sup>-</sup>
+    </div>
+    <div class="rx plus">
+      <span class="label">(+)極 ／ 銅側</span>
+      2H<sup>+</sup> + 2e<sup>-</sup> → H<sub>2</sub>
+    </div>
+  </div>
+
+  <p class="notes">
+    亜鉛板と銅板をうすい塩酸につなぎ、導線でつなぐと電池になります。(-)極の亜鉛が溶け、(+)極の銅板から水素が発生するのが教科書 p.51 図4 の電池モデルです。
+  </p>
+
+  <div class="next-card">
+    <div class="next-title">💡 この電池の問題点を克服したのが <strong>ダニエル電池</strong></div>
+    <blockquote>「51ページの図4の電池の問題点を改良した物として、ダニエル電池が発明された。ダニエル電池は、硫酸亜鉛と硫酸銅の2種類の電解質の水溶液と、この2つの水溶液を区切るためのセロハン膜を使用している。」（教科書 p.56）</blockquote>
+    <table class="compare">
+      <thead><tr><th></th><th>うすい塩酸電池（このシミュ）</th><th>ダニエル電池</th></tr></thead>
+      <tbody>
+        <tr><th>気体発生</th><td>水素発生（可燃性・危険）</td><td>発生しない</td></tr>
+        <tr><th>電圧</th><td>不安定（だんだん下がる）</td><td>約1.1V 長時間安定</td></tr>
+        <tr><th>水溶液</th><td>うすい塩酸 1槽</td><td>ZnSO₄ + CuSO₄ 2槽（セロハン仕切り）</td></tr>
+        <tr><th>(-)極</th><td>亜鉛板 Zn</td><td>亜鉛板 Zn（同じ）</td></tr>
+        <tr><th>(+)極</th><td>銅板 Cu（電子の受け渡しのみ）</td><td>銅板 Cu（銅が析出する）</td></tr>
+      </tbody>
+    </table>
+    <a class="next-link" href="https://mararararai-mst.github.io/daniel-cell/" target="_blank" rel="noopener">→ ダニエル電池シミュレーションを開く</a>
+  </div>
+
+  <details class="explainer">
+    <summary>💡 「分極」ってなに？（発展）</summary>
+    <div class="explainer-body">
+      <p>うすい塩酸電池では、(+)極の銅板の表面に <strong>水素気泡が張り付いて</strong> いきます。気泡は電気を通さないので、銅板の <strong>電子の受け渡しが妨げられ</strong>、電圧がだんだん下がってしまいます。</p>
+      <p>この現象を <strong>分極</strong> といいます。「電圧が安定しない」のはこのため。実験では銅板を磨くと一時的に気泡が取れて電圧が回復しますが、すぐにまた気泡がたまってしまいます。</p>
+      <div class="advanced">
+        <strong>教科書では：</strong>「分極」という用語は本文に登場しません。教科書 p.58 では「<strong>51ページの図4の電池のように、電極の表面から気体は発生しなかった</strong>」（ダニエル電池の説明）と、塩酸電池との対比だけで述べられています。
+      </div>
+    </div>
+  </details>
+
+  <details class="explainer">
+    <summary>💡 ダニエル電池はどう改良したの？（発展）</summary>
+    <div class="explainer-body">
+      <p>ダニエル電池は <strong>2槽（ZnSO₄ と CuSO₄）をセロハンで仕切る</strong> ことで、(+)極側に水素イオン(H⁺)が来ないようにしました。</p>
+      <p>(+)極側には Cu²⁺ がいるので、電子を受け取るのは <strong>Cu²⁺ → Cu</strong>（銅が析出）になります。気体が出ないので分極は起きず、電圧が安定して長く保たれます。</p>
+      <div class="advanced">
+        <strong>教科書 p.58：</strong>「ダニエル電池は、約1.1Vの電圧を長い時間安定して得られ、可燃性の水素が発生しないという点から、51ページの図4の電池よりもすぐれている。」
+      </div>
+    </div>
+  </details>
+</div>
+
+<script>
+// ===== Acid Cell (うすい塩酸電池) Simulation (p5.js) =====
+const MODES = { AUTO: 'auto', STEP: 'step' };
+let mode = MODES.AUTO;
+let playing = false;
+let speedMul = 1.0;
+let stepIndex = 0;
+// 電池残量: 気泡蓄積で電圧低下するが、ダニエル電池と同じく時間で消耗もする
+let chargeLevel = 1.0;
+const FULL_DISCHARGE_TICKS = 60 * 90;
+let highlightTarget = null;
+// 銅板に張り付いた気泡。これが多いほど電圧が下がる(分極の表現)
+let stuckBubbles = [];
+const MAX_STUCK = 28;
+// 自由運動する水素気泡(銅板から発生→上昇→水面で消滅)
+let risingBubbles = [];
+
+// STEP definitions
+const STEPS = [
+  { title: '装置の構成', desc: '亜鉛板と銅板をうすい塩酸につなぎ、上で導線でつないで電圧計をつけます。電解質である塩酸の中で、亜鉛と銅という異なる2種類の金属が反応すると電池になります。',
+    flags: { zn: false, e: false, hMove: false, bubble: false, stuck: false, labels: true, voltage: false }, problem: false },
+  { title: '亜鉛が溶け出す', desc: '(-)極の亜鉛板で、亜鉛原子が電子を2個失って亜鉛イオン(Zn²⁺)になり、うすい塩酸の中にとけ出していきます。\nZn → Zn²⁺ + 2e⁻',
+    flags: { zn: true, e: false, hMove: false, bubble: false, stuck: false, labels: false, voltage: false }, problem: false },
+  { title: '電子が導線を流れる', desc: '亜鉛に残された電子は、導線を通って(+)極の銅板へ向かって移動します。電圧計の針が振れて、電圧が示されます。',
+    flags: { zn: true, e: true, hMove: false, bubble: false, stuck: false, labels: false, voltage: true }, problem: false },
+  { title: '水素イオンが電子を受け取る', desc: '銅板の表面で、水溶液中の水素イオン(H⁺)が、導線から運ばれてきた電子を受け取って水素原子となります。さらに2個結びついて水素分子(H₂)になります。\n2H⁺ + 2e⁻ → (2H) → H₂',
+    flags: { zn: true, e: true, hMove: true, bubble: false, stuck: false, labels: false, voltage: true }, problem: false },
+  { title: '水素気泡が発生する', desc: '銅板の表面から、水素(H₂)が気泡となって出ていきます。これが教科書 p.51 図4「+極の表面から空気中に出ていく」の場面です。',
+    flags: { zn: true, e: true, hMove: true, bubble: true, stuck: false, labels: false, voltage: true }, problem: false },
+  { title: '💥 問題点①：危険な気体が発生', desc: '発生している水素は可燃性の気体です。火が近くにあると爆発的に燃える危険があります。だから実際の実験では火気厳禁。これがこの電池の弱点その1。',
+    flags: { zn: true, e: true, hMove: true, bubble: true, stuck: false, labels: false, voltage: true }, problem: true },
+  { title: '📉 問題点②：電圧が下がる', desc: '時間がたつと、水素気泡が銅板の表面に張り付き、電子の受け渡しを妨げるようになります。すると電圧計の針がだんだん下がっていきます。\n「電圧が一定でない」のがこの電池の弱点その2。\n→ この問題を解決したのが、次のページの「ダニエル電池」です。',
+    flags: { zn: true, e: true, hMove: true, bubble: true, stuck: true, labels: false, voltage: true }, problem: true, depletedDemo: true },
+];
+
+const activeFlags = { zn: true, e: true, hMove: true, bubble: true, stuck: true, labels: false, voltage: true };
+
+function applyStepFlags() {
+  const s = STEPS[stepIndex];
+  Object.assign(activeFlags, s.flags);
+  document.getElementById('step-no').textContent = 'STEP ' + (stepIndex + 1);
+  document.getElementById('step-title').textContent = s.title;
+  document.getElementById('step-desc').textContent = s.desc;
+  document.getElementById('step-counter').textContent = (stepIndex + 1) + ' / ' + STEPS.length;
+  document.getElementById('prev-step').disabled = (stepIndex === 0);
+  document.getElementById('next-step').disabled = (stepIndex === STEPS.length - 1);
+  // STEP の問題点フェーズはステップ情報パネルを警告色に
+  const info = document.getElementById('step-info');
+  if (s.problem) info.classList.add('problem'); else info.classList.remove('problem');
+  // STEP 7 はデモ用に張り付き気泡を最大にしてしまう
+  if (s.depletedDemo) {
+    if (stuckBubbles.length < MAX_STUCK * 0.85) {
+      stuckBubbles = [];
+      for (let i = 0; i < Math.floor(MAX_STUCK * 0.85); i++) stuckBubbles.push(makeStuckBubble());
+    }
+  }
+  // STEP 切り替え時に必要に応じてクリア
+  if (!s.flags.stuck) stuckBubbles = [];
+  if (!s.flags.bubble) risingBubbles = [];
+}
+
+// ===== Layout (normalized) =====
+let canvasW = 1000, canvasH = 600;
+const LAYOUT = {
+  beakerY: 0.40,
+  beakerH: 0.45,
+  liquidTopOffset: 0.06,
+  // 単一容器(教科書 p.51 図4)：1槽
+  beakerX: 0.10, beakerW: 0.80,
+  electrodeW: 0.025, electrodeH: 0.30,
+  electrodeTopY: 0.33,
+  wireZnTop: { x: 0.22, y: 0.18 },
+  wireCuTop: { x: 0.78, y: 0.18 },
+  voltMeterX: 0.41, voltMeterY: 0.07, voltMeterW: 0.18, voltMeterH: 0.13,
+  znElecX: 0.30,
+  cuElecX: 0.70,
+};
+
+// Electron path
+let electronPathNorm = [];
+let electronSegs = [];
+let electronTotalLen = 0;
+const N_ELECTRONS = 18;
+let electronPos = [];
+
+// Zn²⁺ particles (亜鉛板から拡散)
+const ZN2_PARTICLES = 5;
+let zn2 = [];
+
+// 亜鉛電極内を上昇する電子（亜鉛板に残された電子）
+const ZN_EMIT_PARTICLES = 4;
+let znEmit = [];
+
+// H⁺ ions in solution — drift toward Cu electrode
+const H_IONS = 10;
+let hIons = [];
+
+// Cl⁻ ions in solution — stay near center
+const CL_IONS = 8;
+let clIons = [];
+
+function buildElectronPath() {
+  const lbX = LAYOUT.znElecX;
+  const rbX = LAYOUT.cuElecX;
+  const electrodeTop = LAYOUT.electrodeTopY;
+  electronPathNorm = [
+    { x: lbX, y: electrodeTop },
+    { x: LAYOUT.wireZnTop.x, y: electrodeTop },
+    { x: LAYOUT.wireZnTop.x, y: LAYOUT.wireZnTop.y },
+    { x: LAYOUT.voltMeterX - 0.02, y: LAYOUT.wireZnTop.y },
+    { x: LAYOUT.voltMeterX + LAYOUT.voltMeterW + 0.02, y: LAYOUT.wireZnTop.y },
+    { x: LAYOUT.wireCuTop.x, y: LAYOUT.wireZnTop.y },
+    { x: LAYOUT.wireCuTop.x, y: electrodeTop },
+    { x: rbX, y: electrodeTop },
+  ];
+  electronSegs = [];
+  electronTotalLen = 0;
+  for (let i = 0; i < electronPathNorm.length - 1; i++) {
+    const a = electronPathNorm[i], b = electronPathNorm[i + 1];
+    const len = Math.hypot(b.x - a.x, b.y - a.y);
+    electronSegs.push({ a, b, len, cum: electronTotalLen });
+    electronTotalLen += len;
+  }
+  electronPos = [];
+  for (let i = 0; i < N_ELECTRONS; i++) {
+    electronPos.push((i / N_ELECTRONS) * electronTotalLen);
+  }
+}
+
+function resetIons() {
+  zn2 = [];
+  for (let i = 0; i < ZN2_PARTICLES; i++) zn2.push(makeZn2(i / ZN2_PARTICLES));
+  znEmit = [];
+  for (let i = 0; i < ZN_EMIT_PARTICLES; i++) znEmit.push(makeZnEmit(i / ZN_EMIT_PARTICLES));
+  hIons = [];
+  for (let i = 0; i < H_IONS; i++) hIons.push(makeHIon(i / H_IONS));
+  clIons = [];
+  for (let i = 0; i < CL_IONS; i++) clIons.push(makeClIon(i / CL_IONS));
+  risingBubbles = [];
+  stuckBubbles = [];
+}
+
+function makeZn2(t) {
+  return {
+    t: t,
+    lifetime: 1.0 + Math.random() * 1.0,
+    surfaceY: Math.random(),
+    driftAmount: 0.30 + Math.random() * 0.30,
+  };
+}
+function makeZnEmit(t) {
+  return { t: t, surfaceY: Math.random() };
+}
+function makeHIon(seed) {
+  // H⁺ は液中を漂い、銅板付近で「吸い込まれる」演出
+  return {
+    t: seed,
+    homeX: 0.20 + Math.random() * 0.60,   // 液中での通常位置(0..1 of beaker width)
+    homeY: 0.20 + Math.random() * 0.70,
+    phase: Math.random() * Math.PI * 2,
+  };
+}
+function makeClIon(seed) {
+  return {
+    homeX: 0.15 + Math.random() * 0.70,
+    homeY: 0.20 + Math.random() * 0.70,
+    phase: Math.random() * Math.PI * 2,
+  };
+}
+
+function makeRisingBubble() {
+  return {
+    x: 0.50 + (Math.random() - 0.5) * 0.06,  // 銅板の左面(液側)
+    y: 0.30 + Math.random() * 0.70,           // 銅板の途中から開始
+    r: 0.012 + Math.random() * 0.010,
+    vy: 0.0035 + Math.random() * 0.0030,
+    wobblePhase: Math.random() * Math.PI * 2,
+  };
+}
+function makeStuckBubble() {
+  // 銅板左面のランダム位置に張り付く
+  return {
+    yFrac: Math.random(),
+    side: Math.random() < 0.5 ? -1 : 1,  // 銅板の左面(主)・右面(まれ)
+    r: 0.008 + Math.random() * 0.008,
+    offset: Math.random() * 0.4,
+  };
+}
+
+function canvasRatio() {
+  return (window.innerWidth < 600) ? 0.75 : 0.42;
+}
+
+function pixelLayout() {
+  const w = canvasW, h = canvasH;
+  return {
+    w, h,
+    beakerY: LAYOUT.beakerY * h,
+    beakerH: LAYOUT.beakerH * h,
+    liquidTopY: (LAYOUT.beakerY + LAYOUT.liquidTopOffset) * h,
+    liquidBottomY: (LAYOUT.beakerY + LAYOUT.beakerH - 0.02) * h,
+    beakerX: LAYOUT.beakerX * w, beakerW: LAYOUT.beakerW * w,
+    electrodeW: LAYOUT.electrodeW * w, electrodeH: LAYOUT.electrodeH * h,
+    electrodeTopY: LAYOUT.electrodeTopY * h,
+    wireZnTop: { x: LAYOUT.wireZnTop.x * w, y: LAYOUT.wireZnTop.y * h },
+    wireCuTop: { x: LAYOUT.wireCuTop.x * w, y: LAYOUT.wireCuTop.y * h },
+    voltMeterX: LAYOUT.voltMeterX * w, voltMeterY: LAYOUT.voltMeterY * h,
+    voltMeterW: LAYOUT.voltMeterW * w, voltMeterH: LAYOUT.voltMeterH * h,
+    znElecX: LAYOUT.znElecX * w,
+    cuElecX: LAYOUT.cuElecX * w,
+  };
+}
+
+function setup() {
+  const host = document.getElementById('canvas-host');
+  const w = Math.min(1040, host.clientWidth || 1040);
+  const h = Math.round(w * canvasRatio());
+  canvasW = w; canvasH = h;
+  const c = createCanvas(w, h);
+  c.parent('canvas-host');
+  frameRate(60);
+  buildElectronPath();
+  resetIons();
+  applyStepFlags();
+  updateModeUI();
+}
+
+function windowResized() {
+  const host = document.getElementById('canvas-host');
+  const w = Math.min(1040, host.clientWidth || 1040);
+  const h = Math.round(w * canvasRatio());
+  canvasW = w; canvasH = h;
+  resizeCanvas(w, h);
+}
+
+function draw() {
+  background(255, 251, 240);
+
+  const L = pixelLayout();
+
+  // Beaker (single, with dilute HCl)
+  drawBeaker(L);
+  drawBeakerFrame(L);
+
+  // Wires
+  drawWires(L);
+
+  // Volt meter
+  drawVoltMeter(L);
+
+  // Electrodes (over liquid)
+  drawElectrode(L.znElecX, L, 'zinc', '亜鉛 (Zn)', '(-)');
+  drawElectrode(L.cuElecX, L, 'copper', '銅 (Cu)', '(+)');
+
+  // Beaker label
+  drawBeakerLabel(L);
+
+  // ===== Animations
+  const animActive = (mode === MODES.AUTO) ? playing : true;
+  const direction = 1;
+  const dt = (animActive ? 1 : 0) * speedMul;
+
+  // Charge level: AUTO で playing 中、または stuckBubble の蓄積で減る
+  if (mode === MODES.AUTO && animActive) {
+    chargeLevel = Math.max(0, chargeLevel - (speedMul / FULL_DISCHARGE_TICKS));
+    if (chargeLevel <= 0) {
+      playing = false;
+      document.getElementById('play-btn').textContent = '▶ 動かす';
+      activeFlags.voltage = false;
+      document.getElementById('depleted-note').classList.add('show');
+    }
+  } else if (mode === MODES.STEP) {
+    const s = STEPS[stepIndex];
+    if (s && s.depletedDemo) chargeLevel = Math.max(0.20, chargeLevel - 0.010 * speedMul);
+    else chargeLevel = 1.0;
+  }
+  updateChargeUI();
+
+  // Liquid ions (always visible when liquid exists)
+  drawLiquidIons(L);
+
+  // Electrons in wire
+  if (activeFlags.e) {
+    for (let i = 0; i < electronPos.length; i++) {
+      electronPos[i] = ((electronPos[i] + 0.005 * dt * direction) % electronTotalLen + electronTotalLen) % electronTotalLen;
+      drawElectronAt(electronPos[i], L);
+    }
+  }
+
+  // Zn²⁺ emerging from Zn electrode and electrons rising in Zn rod
+  if (activeFlags.zn) {
+    for (let p of znEmit) {
+      p.t += 0.008 * dt * direction;
+      if (p.t > 1) { p.t = 0; p.surfaceY = Math.random(); }
+      drawZnEmit(p, L);
+    }
+    for (let p of zn2) {
+      p.t += 0.004 * dt * direction;
+      if (p.t > 1) { p.t = 0; p.surfaceY = Math.random(); p.driftAmount = 0.30 + Math.random() * 0.30; }
+      drawZn2(p, L);
+    }
+  }
+
+  // H⁺ moving toward Cu electrode (only when hMove flag set)
+  if (activeFlags.hMove) {
+    // H⁺ がCu側に流れていく演出: 別レイヤで描画
+    drawHIonsTowardCu(L, dt);
+  }
+
+  // Generate / animate rising bubbles from Cu surface
+  if (activeFlags.bubble && animActive) {
+    // 一定確率で新しい気泡を発生
+    if (Math.random() < 0.06 * speedMul && risingBubbles.length < 14) {
+      risingBubbles.push(makeRisingBubble());
+    }
+    // 既存気泡を上昇
+    for (let b of risingBubbles) {
+      b.y -= b.vy * dt;
+      b.wobblePhase += 0.05 * dt;
+    }
+    // 水面に達したら削除
+    risingBubbles = risingBubbles.filter(b => b.y > LAYOUT.beakerY + LAYOUT.liquidTopOffset - 0.005);
+  }
+  // Draw rising bubbles (even when paused, just don't animate)
+  for (let b of risingBubbles) drawRisingBubble(b, L);
+
+  // Stuck bubbles accumulate over time when bubble flag is set
+  // 教科書「電圧が一定でない」をゆっくり再現: 0.012/frame ≒ 30秒で MAX に到達
+  if (activeFlags.stuck && animActive && stuckBubbles.length < MAX_STUCK) {
+    if (Math.random() < 0.012 * speedMul) {
+      stuckBubbles.push(makeStuckBubble());
+    }
+  }
+  for (let b of stuckBubbles) drawStuckBubble(b, L);
+
+  // Labels (only step 1)
+  if (activeFlags.labels) {
+    drawLabels(L);
+  }
+
+  // Highlight overlay for observation
+  drawHighlight(L);
+}
+
+function getVoltageFraction() {
+  // 基本電圧 = 1.1V を 1.5V スケールで表示
+  // 張り付き気泡が増えるほど電圧が下がる(分極)
+  if (!activeFlags.voltage) return 0;
+  const baseFrac = (1.1 / 1.5);
+  const polarFactor = 1 - (stuckBubbles.length / MAX_STUCK) * 0.75;  // 最大75%まで低下
+  return baseFrac * polarFactor * Math.max(chargeLevel, 0.05);
+}
+
+function drawHighlight(L) {
+  if (!highlightTarget) return;
+  const pulse = (Math.sin(frameCount * 0.12) + 1) * 0.5;
+  let x, y, w, h;
+  switch (highlightTarget) {
+    case 'wire':
+      x = L.wireZnTop.x - canvasW * 0.02;
+      y = L.voltMeterY - 8;
+      w = L.wireCuTop.x - L.wireZnTop.x + canvasW * 0.04;
+      h = (L.electrodeTopY - L.voltMeterY) + 16;
+      break;
+    case 'zn':
+      x = L.znElecX - L.electrodeW * 1.5;
+      y = L.electrodeTopY - 30;
+      w = L.electrodeW * 3.0;
+      h = (L.liquidBottomY - L.electrodeTopY) + 35;
+      break;
+    case 'cu':
+      x = L.cuElecX - L.electrodeW * 1.8;
+      y = L.electrodeTopY - 30;
+      w = L.electrodeW * 3.6;
+      h = (L.liquidBottomY - L.electrodeTopY) + 35;
+      break;
+    case 'stuck':
+      x = L.cuElecX - L.electrodeW * 2.2;
+      y = L.liquidTopY - 6;
+      w = L.electrodeW * 2.5;
+      h = (L.liquidBottomY - L.liquidTopY) + 8;
+      break;
+    case 'voltmeter':
+      x = L.voltMeterX - 8;
+      y = L.voltMeterY - 8;
+      w = L.voltMeterW + 16;
+      h = L.voltMeterH + 16;
+      break;
+    case 'liquid':
+      x = L.beakerX - 6;
+      y = L.beakerY - 6;
+      w = L.beakerW + 12;
+      h = L.beakerH + 12;
+      break;
+  }
+  noFill();
+  stroke(217, 122, 75, 200 + pulse * 55);
+  strokeWeight(3 + pulse * 2);
+  rect(x, y, w, h, 10);
+  noStroke();
+  fill(255, 215, 100, 30 + pulse * 30);
+  rect(x, y, w, h, 10);
+}
+
+// ===== Drawing helpers =====
+function drawBeaker(L) {
+  // うすい塩酸 — ほぼ無色透明 (わずかに黄色味)
+  noStroke();
+  fill(252, 248, 230, 200);
+  const liquidTop = L.liquidTopY;
+  const liquidH = L.liquidBottomY - L.liquidTopY;
+  rect(L.beakerX + 4, liquidTop, L.beakerW - 8, liquidH, 0, 0, 12, 12);
+}
+
+function drawBeakerFrame(L) {
+  noFill();
+  stroke(140, 130, 110, 200);
+  strokeWeight(3);
+  rect(L.beakerX, L.beakerY, L.beakerW, L.beakerH, 4, 4, 14, 14);
+}
+
+function drawWires(L) {
+  stroke(60, 50, 40);
+  strokeWeight(3);
+  noFill();
+  line(L.znElecX, L.electrodeTopY, L.wireZnTop.x, L.electrodeTopY);
+  line(L.wireZnTop.x, L.electrodeTopY, L.wireZnTop.x, L.wireZnTop.y);
+  line(L.wireZnTop.x, L.wireZnTop.y, L.voltMeterX, L.wireZnTop.y);
+  line(L.voltMeterX + L.voltMeterW, L.wireZnTop.y, L.wireCuTop.x, L.wireZnTop.y);
+  line(L.wireCuTop.x, L.wireZnTop.y, L.wireCuTop.x, L.electrodeTopY);
+  line(L.wireCuTop.x, L.electrodeTopY, L.cuElecX, L.electrodeTopY);
+
+  if (activeFlags.voltage) {
+    drawDirectionArrows(L);
+  }
+}
+
+function drawDirectionArrows(L) {
+  const leftMidX = (L.wireZnTop.x + L.voltMeterX) / 2;
+  const rightMidX = (L.voltMeterX + L.voltMeterW + L.wireCuTop.x) / 2;
+  const wireY = L.wireZnTop.y;
+  const offsetY = 18;
+  const arrowLen = canvasW * 0.05;
+
+  // 電流(I) — 赤、Cu→Zn (上側)
+  drawArrow(rightMidX + arrowLen / 2, wireY - offsetY, rightMidX - arrowLen / 2, wireY - offsetY, '#D9533C', 'I (電流)');
+  drawArrow(leftMidX + arrowLen / 2, wireY - offsetY, leftMidX - arrowLen / 2, wireY - offsetY, '#D9533C', null);
+
+  // 電子(e⁻) — 青、Zn→Cu (下側)
+  drawArrow(leftMidX - arrowLen / 2, wireY + offsetY, leftMidX + arrowLen / 2, wireY + offsetY, '#4A7BAA', 'e⁻ (電子)');
+  drawArrow(rightMidX - arrowLen / 2, wireY + offsetY, rightMidX + arrowLen / 2, wireY + offsetY, '#4A7BAA', null);
+}
+
+function drawArrow(x1, y1, x2, y2, colorHex, label) {
+  push();
+  stroke(colorHex);
+  strokeWeight(3);
+  noFill();
+  line(x1, y1, x2, y2);
+  const ang = Math.atan2(y2 - y1, x2 - x1);
+  const ah = canvasW * 0.012;
+  fill(colorHex);
+  noStroke();
+  triangle(
+    x2, y2,
+    x2 - ah * Math.cos(ang - 0.4), y2 - ah * Math.sin(ang - 0.4),
+    x2 - ah * Math.cos(ang + 0.4), y2 - ah * Math.sin(ang + 0.4)
+  );
+  if (label) {
+    textAlign(CENTER, BOTTOM);
+    textSize(Math.max(10, canvasW / 100));
+    textStyle(BOLD);
+    fill(colorHex);
+    text(label, (x1 + x2) / 2, Math.min(y1, y2) - 4);
+  }
+  pop();
+}
+
+function drawVoltMeter(L) {
+  noStroke();
+  fill(255);
+  rect(L.voltMeterX, L.voltMeterY, L.voltMeterW, L.voltMeterH, 8);
+  stroke(60, 50, 40);
+  strokeWeight(2);
+  noFill();
+  rect(L.voltMeterX, L.voltMeterY, L.voltMeterW, L.voltMeterH, 8);
+  const cx = L.voltMeterX + L.voltMeterW / 2;
+  const cy = L.voltMeterY + L.voltMeterH * 0.65;
+  const r = L.voltMeterH * 0.42;
+  noFill();
+  stroke(180, 160, 130);
+  arc(cx, cy, r * 2, r * 2, PI, TWO_PI);
+  // ticks (0 - 1.5V, 0.25V刻み)
+  stroke(120, 100, 80);
+  strokeWeight(1.5);
+  for (let i = 0; i <= 6; i++) {
+    const a = PI + (i / 6) * PI;
+    const x1 = cx + Math.cos(a) * (r - 4);
+    const y1 = cy + Math.sin(a) * (r - 4);
+    const x2 = cx + Math.cos(a) * r;
+    const y2 = cy + Math.sin(a) * r;
+    line(x1, y1, x2, y2);
+  }
+  // needle
+  const targetFrac = getVoltageFraction();
+  if (typeof drawVoltMeter._cur === 'undefined') drawVoltMeter._cur = 0;
+  drawVoltMeter._cur += (targetFrac - drawVoltMeter._cur) * 0.08;
+  const a = PI + drawVoltMeter._cur * PI;
+  stroke(217, 122, 75);
+  strokeWeight(2.5);
+  line(cx, cy, cx + Math.cos(a) * (r - 2), cy + Math.sin(a) * (r - 2));
+  noStroke();
+  fill(60, 50, 40);
+  ellipse(cx, cy, 4, 4);
+  // label
+  textAlign(CENTER, TOP);
+  textSize(Math.max(10, canvasW / 90));
+  textStyle(BOLD);
+  fill(80, 70, 50);
+  text('電圧計', cx, L.voltMeterY + 4);
+  // reading
+  textAlign(CENTER, BOTTOM);
+  textSize(Math.max(11, canvasW / 75));
+  fill(217, 122, 75);
+  const reading = activeFlags.voltage ? (1.5 * drawVoltMeter._cur).toFixed(2) : '0.00';
+  text(reading + ' V', cx, L.voltMeterY + L.voltMeterH - 4);
+}
+
+function drawElectrode(x, L, kind, label, sign) {
+  const top = L.electrodeTopY;
+  const bot = L.liquidBottomY - 8;
+  let w;
+  if (kind === 'zinc') {
+    // 亜鉛が溶けてやせ細る
+    w = L.electrodeW * (0.55 + chargeLevel * 0.45);
+  } else {
+    // 銅板は変化しない
+    w = L.electrodeW * 1.0;
+  }
+  noStroke();
+  if (kind === 'zinc') fill(176, 180, 184); else fill(201, 125, 74);
+  rect(x - w / 2, top, w, bot - top, 4);
+  // shading
+  fill(255, 255, 255, 60);
+  rect(x - w / 2 + 2, top + 4, 2, bot - top - 8);
+  // label above
+  textAlign(CENTER, BOTTOM);
+  textSize(Math.max(13, canvasW / 65));
+  textStyle(BOLD);
+  fill(kind === 'zinc' ? '#4A7BAA' : '#D97A4B');
+  text(sign + ' ' + label, x, top - 24);
+}
+
+function drawBeakerLabel(L) {
+  textAlign(CENTER, BOTTOM);
+  textSize(Math.max(11, canvasW / 82));
+  textStyle(BOLD);
+  fill(80, 70, 50);
+  text('うすい塩酸（HCl 水溶液）', L.beakerX + L.beakerW / 2, L.beakerY + L.beakerH + 22);
+}
+
+function drawLabels(L) {
+  textAlign(LEFT, CENTER);
+  textSize(Math.max(11, canvasW / 90));
+  textStyle(NORMAL);
+  fill(120, 90, 40);
+  text('導線', L.voltMeterX + L.voltMeterW + 6, L.wireZnTop.y - 10);
+  text('電圧計', L.voltMeterX + L.voltMeterW + 6, L.wireZnTop.y + 14);
+}
+
+function drawElectronAt(d, L) {
+  let seg = null;
+  for (let i = 0; i < electronSegs.length; i++) {
+    if (d >= electronSegs[i].cum && d < electronSegs[i].cum + electronSegs[i].len) {
+      seg = electronSegs[i];
+      break;
+    }
+  }
+  if (!seg) seg = electronSegs[electronSegs.length - 1];
+  const localT = (d - seg.cum) / seg.len;
+  const nx = lerp(seg.a.x, seg.b.x, localT);
+  const ny = lerp(seg.a.y, seg.b.y, localT);
+  const px = nx * canvasW;
+  const py = ny * canvasH;
+  noStroke();
+  fill(74, 123, 170);
+  const er = Math.max(12, canvasW * 0.014);
+  ellipse(px, py, er, er);
+  fill(255);
+  rect(px - er * 0.30, py - er * 0.06, er * 0.60, Math.max(2, er * 0.14));
+}
+
+function drawZn2(p, L) {
+  const liquidTop = L.liquidTopY + 8;
+  const liquidBot = L.liquidBottomY - 15;
+  const startY = lerp(liquidTop, liquidBot, p.surfaceY);
+  const startX = L.znElecX + L.electrodeW * 0.55;
+  const endX = L.znElecX + L.electrodeW * 0.55 + (L.cuElecX - L.znElecX) * p.driftAmount * 0.4;
+  const easedT = 1 - Math.pow(1 - p.t, 2.2);
+  const x = lerp(startX, endX, easedT);
+  const y = startY + p.t * 24 + Math.sin(p.t * Math.PI * 2.5 + p.lifetime * 3) * 5;
+  const alpha = (p.t < 0.20 ? p.t / 0.20 : (p.t > 0.85 ? (1 - p.t) / 0.15 : 1)) * 255;
+  drawIonCircle(x, y, 'Zn²⁺', '#E8A040', alpha);
+}
+
+function drawZnEmit(p, L) {
+  const liquidTop = L.liquidTopY + 8;
+  const liquidBot = L.liquidBottomY - 15;
+  const startY = lerp(liquidTop, liquidBot, p.surfaceY);
+  const y = lerp(startY, L.electrodeTopY + 4, p.t);
+  const x = L.znElecX;
+  const alpha = (p.t < 0.15 ? p.t / 0.15 : (p.t > 0.80 ? (1 - p.t) / 0.20 : 1)) * 240;
+  noStroke();
+  fill(74, 123, 170, alpha);
+  const r = Math.max(11, canvasW * 0.012);
+  ellipse(x, y, r, r);
+  fill(255, alpha);
+  rect(x - r * 0.30, y - r * 0.06, r * 0.60, Math.max(2, r * 0.14));
+}
+
+function drawLiquidIons(L) {
+  const liquidTop = L.liquidTopY + 6;
+  const liquidBot = L.liquidBottomY - 6;
+  const liqLeft = L.beakerX + 10;
+  const liqRight = L.beakerX + L.beakerW - 10;
+  // Cl⁻ (背景: 散在、ほぼ動かない)
+  for (const c of clIons) {
+    const x = liqLeft + (liqRight - liqLeft) * c.homeX + Math.sin(frameCount * 0.02 + c.phase) * 3;
+    const y = liquidTop + (liquidBot - liquidTop) * c.homeY + Math.cos(frameCount * 0.02 + c.phase) * 3;
+    // 亜鉛板や銅板の中には描かない
+    if (Math.abs(x - L.znElecX) < L.electrodeW * 0.7) continue;
+    if (Math.abs(x - L.cuElecX) < L.electrodeW * 0.7) continue;
+    drawIonCircle(x, y, 'Cl⁻', '#7AB89A', 220);
+  }
+  // H⁺ (薄青・散在 — hMove flagがOFFのときの自由運動)
+  if (!activeFlags.hMove) {
+    for (const h of hIons) {
+      const x = liqLeft + (liqRight - liqLeft) * h.homeX + Math.sin(frameCount * 0.025 + h.phase) * 4;
+      const y = liquidTop + (liquidBot - liquidTop) * h.homeY + Math.cos(frameCount * 0.025 + h.phase) * 4;
+      if (Math.abs(x - L.znElecX) < L.electrodeW * 0.7) continue;
+      if (Math.abs(x - L.cuElecX) < L.electrodeW * 0.7) continue;
+      drawIonCircle(x, y, 'H⁺', '#7BBCDB', 230);
+    }
+  }
+}
+
+function drawHIonsTowardCu(L, dt) {
+  const liquidTop = L.liquidTopY + 6;
+  const liquidBot = L.liquidBottomY - 6;
+  const liqLeft = L.beakerX + 10;
+  const liqRight = L.beakerX + L.beakerW - 10;
+  // H⁺ が銅板に向かって流れる
+  for (const h of hIons) {
+    h.t += 0.004 * dt;
+    if (h.t > 1) { h.t = 0; h.homeY = 0.20 + Math.random() * 0.70; h.homeX = 0.20 + Math.random() * 0.60; }
+    // start position
+    const startX = liqLeft + (liqRight - liqLeft) * h.homeX;
+    const startY = liquidTop + (liquidBot - liquidTop) * h.homeY;
+    // target: cu electrode surface (left side of Cu rod)
+    const targetX = L.cuElecX - L.electrodeW * 0.6;
+    const targetY = startY + Math.sin(h.t * Math.PI * 2 + h.phase) * 6;
+    const x = lerp(startX, targetX, Math.pow(h.t, 1.3));
+    const y = lerp(startY, targetY, h.t);
+    // 銅板の内側に行ったら描画しない
+    if (x > L.cuElecX - L.electrodeW * 0.4) continue;
+    // 亜鉛板を避ける
+    if (Math.abs(x - L.znElecX) < L.electrodeW * 0.7) continue;
+    const alpha = (h.t < 0.15 ? h.t / 0.15 : (h.t > 0.80 ? (1 - h.t) / 0.20 : 1)) * 240;
+    drawIonCircle(x, y, 'H⁺', '#7BBCDB', alpha);
+  }
+  // Cl⁻ も静かに表示（背景）
+  for (const c of clIons) {
+    const x = liqLeft + (liqRight - liqLeft) * c.homeX + Math.sin(frameCount * 0.02 + c.phase) * 3;
+    const y = liquidTop + (liquidBot - liquidTop) * c.homeY + Math.cos(frameCount * 0.02 + c.phase) * 3;
+    if (Math.abs(x - L.znElecX) < L.electrodeW * 0.7) continue;
+    if (Math.abs(x - L.cuElecX) < L.electrodeW * 0.7) continue;
+    drawIonCircle(x, y, 'Cl⁻', '#7AB89A', 200);
+  }
+}
+
+function drawRisingBubble(b, L) {
+  const x = L.cuElecX - L.electrodeW * 0.6 + Math.sin(b.wobblePhase) * canvasW * 0.005;
+  const py = b.y * canvasH;
+  const r = b.r * canvasW;
+  noStroke();
+  fill(255, 255, 255, 200);
+  ellipse(x, py, r * 2, r * 2);
+  stroke(140, 170, 190, 180);
+  strokeWeight(1.2);
+  noFill();
+  ellipse(x, py, r * 2, r * 2);
+  // highlight
+  noStroke();
+  fill(255, 255, 255, 230);
+  ellipse(x - r * 0.35, py - r * 0.35, r * 0.6, r * 0.4);
+}
+
+function drawStuckBubble(b, L) {
+  const liquidTop = L.liquidTopY + 4;
+  const liquidBot = L.liquidBottomY - 8;
+  // 銅板の左面 (液体側) に張り付く
+  const surfaceX = L.cuElecX - L.electrodeW * 0.5 - b.r * canvasW * 0.5;
+  const y = lerp(liquidTop, liquidBot, b.yFrac);
+  const r = b.r * canvasW;
+  noStroke();
+  fill(255, 255, 255, 220);
+  ellipse(surfaceX, y, r * 2, r * 2);
+  stroke(160, 180, 200, 200);
+  strokeWeight(1.3);
+  noFill();
+  ellipse(surfaceX, y, r * 2, r * 2);
+  noStroke();
+  fill(255, 255, 255, 240);
+  ellipse(surfaceX - r * 0.3, y - r * 0.3, r * 0.55, r * 0.4);
+}
+
+function drawIonCircle(x, y, label, colorHex, alpha) {
+  noStroke();
+  const c = color(colorHex);
+  c.setAlpha(alpha);
+  fill(c);
+  const r = Math.max(20, canvasW * 0.022);
+  ellipse(x, y, r, r);
+  fill(255, alpha);
+  textAlign(CENTER, CENTER);
+  textStyle(BOLD);
+  textSize(r * 0.38);
+  text(label, x, y);
+}
+
+// ===== UI =====
+function updateChargeUI() {
+  const fillEl = document.getElementById('charge-bar-fill');
+  const pct = document.getElementById('charge-percent');
+  if (!fillEl || !pct) return;
+  const v = Math.max(0, Math.min(1, chargeLevel));
+  fillEl.style.width = (v * 100).toFixed(0) + '%';
+  pct.textContent = Math.round(v * 100) + '%';
+}
+
+function updateModeUI() {
+  const auto = document.getElementById('mode-auto');
+  const step = document.getElementById('mode-step');
+  const autoCtl = document.getElementById('auto-controls');
+  const stepCtl = document.getElementById('step-controls');
+  const stepInfo = document.getElementById('step-info');
+  if (mode === MODES.AUTO) {
+    auto.classList.add('active'); auto.setAttribute('aria-selected', 'true');
+    step.classList.remove('active'); step.setAttribute('aria-selected', 'false');
+    autoCtl.style.display = 'contents';
+    stepCtl.style.display = 'none';
+    stepInfo.classList.remove('active');
+    // 自動再生では全部 ON
+    activeFlags.zn = true; activeFlags.e = true; activeFlags.hMove = true;
+    activeFlags.bubble = true; activeFlags.stuck = true;
+    activeFlags.labels = false; activeFlags.voltage = playing;
+  } else {
+    auto.classList.remove('active'); auto.setAttribute('aria-selected', 'false');
+    step.classList.add('active'); step.setAttribute('aria-selected', 'true');
+    autoCtl.style.display = 'none';
+    stepCtl.style.display = 'inline-flex';
+    stepInfo.classList.add('active');
+    applyStepFlags();
+  }
+}
+
+document.getElementById('mode-auto').addEventListener('click', () => {
+  mode = MODES.AUTO;
+  // STEP モードのデモで張り付いた気泡をクリア(自動再生は最初からスタートしたい)
+  stuckBubbles = [];
+  risingBubbles = [];
+  chargeLevel = 1.0;
+  drawVoltMeter._cur = 0;
+  document.getElementById('depleted-note').classList.remove('show');
+  updateModeUI();
+});
+document.getElementById('mode-step').addEventListener('click', () => {
+  mode = MODES.STEP;
+  playing = false;
+  document.getElementById('play-btn').textContent = '▶ 動かす';
+  // AUTO で蓄積した気泡をクリアして STEP 1 から始めるとき装置だけの状態に
+  stuckBubbles = [];
+  risingBubbles = [];
+  stepIndex = 0;
+  document.getElementById('depleted-note').classList.remove('show');
+  updateModeUI();
+});
+
+document.getElementById('play-btn').addEventListener('click', () => {
+  if (chargeLevel <= 0 && !playing) return;
+  playing = !playing;
+  document.getElementById('play-btn').textContent = playing ? '⏸ 一時停止' : '▶ 動かす';
+  activeFlags.voltage = playing;
+});
+
+document.getElementById('speed').addEventListener('input', (e) => {
+  speedMul = parseFloat(e.target.value);
+  document.getElementById('speed-label').textContent = '×' + speedMul.toFixed(1);
+});
+
+document.getElementById('polish-btn').addEventListener('click', () => {
+  // 銅板を磨く: 張り付き気泡を一掃 → 電圧回復
+  stuckBubbles = [];
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  playing = false;
+  document.getElementById('play-btn').textContent = '▶ 動かす';
+  activeFlags.voltage = false;
+  chargeLevel = 1.0;
+  resetIons();
+  for (let i = 0; i < electronPos.length; i++) {
+    electronPos[i] = (i / N_ELECTRONS) * electronTotalLen;
+  }
+  drawVoltMeter._cur = 0;
+  document.getElementById('depleted-note').classList.remove('show');
+  updateChargeUI();
+});
+
+document.getElementById('prev-step').addEventListener('click', () => {
+  if (stepIndex > 0) { stepIndex--; applyStepFlags(); }
+});
+document.getElementById('next-step').addEventListener('click', () => {
+  if (stepIndex < STEPS.length - 1) { stepIndex++; applyStepFlags(); }
+});
+
+// Overlay toggles
+function toggleOverlay(which) {
+  const other = which === 'minus' ? 'plus' : 'minus';
+  const overlay = document.getElementById('overlay-' + which);
+  const btn = document.getElementById('toggle-' + which);
+  const otherOverlay = document.getElementById('overlay-' + other);
+  const otherBtn = document.getElementById('toggle-' + other);
+  const isOpen = overlay.classList.contains('show');
+  overlay.classList.remove('show');
+  otherOverlay.classList.remove('show');
+  btn.classList.remove('active');
+  otherBtn.classList.remove('active');
+  if (!isOpen) {
+    overlay.classList.add('show');
+    btn.classList.add('active');
+  }
+}
+document.getElementById('toggle-minus').addEventListener('click', () => toggleOverlay('minus'));
+document.getElementById('toggle-plus').addEventListener('click', () => toggleOverlay('plus'));
+document.querySelectorAll('.overlay-explainer .close-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const which = btn.getAttribute('data-overlay');
+    toggleOverlay(which);
+  });
+});
+
+// Observation checklist
+document.querySelectorAll('.obs-item').forEach(item => {
+  const target = item.getAttribute('data-target');
+  item.addEventListener('click', (e) => {
+    if (e.target.tagName === 'INPUT') return;
+    if (highlightTarget === target) {
+      highlightTarget = null;
+      item.classList.remove('active');
+    } else {
+      document.querySelectorAll('.obs-item.active').forEach(el => el.classList.remove('active'));
+      highlightTarget = target;
+      item.classList.add('active');
+    }
+  });
+});
+</script>
+</body>
+</html>
