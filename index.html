@@ -769,12 +769,12 @@ sub, sup { font-size: 0.7em; }
     </div>
     <div class="rx plus">
       <span class="label">(+)極 ／ 銅側</span>
-      2H<sup>+</sup> + 2e<sup>-</sup> → H<sub>2</sub>
+      2H<sup>+</sup> + 2e<sup>-</sup> → (2H) → H<sub>2</sub>
     </div>
   </div>
 
   <p class="notes">
-    亜鉛板と銅板をうすい塩酸につなぎ、導線でつなぐと電池になります。(-)極の亜鉛が溶け、(+)極の銅板から水素が発生するのが教科書 p.51 図4 の電池モデルです。
+    亜鉛板と銅板をうすい塩酸に入れ、上で導線でつなぐと電池になります。(-)極の亜鉛が溶け、(+)極の銅板から水素が発生するのが教科書 p.51 図4 の電池モデルです。化学変化を利用して、物質のもつ <strong>化学エネルギーを電気エネルギーに変える装置</strong> を電池といいます（教科書 p.50）。
   </p>
 
   <div class="next-card">
@@ -835,7 +835,7 @@ let risingBubbles = [];
 
 // STEP definitions
 const STEPS = [
-  { title: '装置の構成', desc: '亜鉛板と銅板をうすい塩酸につなぎ、上で導線でつないで電圧計をつけます。電解質である塩酸の中で、亜鉛と銅という異なる2種類の金属が反応すると電池になります。',
+  { title: '装置の構成', desc: '電解質であるうすい塩酸の中に、亜鉛と銅という2種類の異なる金属板を入れ、導線でつないで電圧計をつけます。これで電圧が生じて電流をとり出せる電池になります。',
     flags: { zn: false, e: false, hMove: false, bubble: false, stuck: false, labels: true, voltage: false }, problem: false },
   { title: '亜鉛が溶け出す', desc: '(-)極の亜鉛板で、亜鉛原子が電子を2個失って亜鉛イオン(Zn²⁺)になり、うすい塩酸の中にとけ出していきます。\nZn → Zn²⁺ + 2e⁻',
     flags: { zn: true, e: false, hMove: false, bubble: false, stuck: false, labels: false, voltage: false }, problem: false },
@@ -847,7 +847,7 @@ const STEPS = [
     flags: { zn: true, e: true, hMove: true, bubble: true, stuck: false, labels: false, voltage: true }, problem: false },
   { title: '💥 問題点①：危険な気体が発生', desc: '発生している水素は可燃性の気体です。火が近くにあると爆発的に燃える危険があります。だから実際の実験では火気厳禁。これがこの電池の弱点その1。',
     flags: { zn: true, e: true, hMove: true, bubble: true, stuck: false, labels: false, voltage: true }, problem: true },
-  { title: '📉 問題点②：電圧が下がる', desc: '時間がたつと、水素気泡が銅板の表面に張り付き、電子の受け渡しを妨げるようになります。すると電圧計の針がだんだん下がっていきます。\n「電圧が一定でない」のがこの電池の弱点その2。\n→ この問題を解決したのが、次のページの「ダニエル電池」です。',
+  { title: '📉 問題点②：電圧が下がる', desc: '時間がたつと、水素気泡が銅板の表面に張り付き、電子の受け渡しを妨げるようになります。すると電圧計の針がだんだん下がっていきます。\n「電圧が一定でない」のがこの電池の弱点その2。\n→ この問題を解決したのが、教科書 p.56 の「ダニエル電池」です。',
     flags: { zn: true, e: true, hMove: true, bubble: true, stuck: true, labels: false, voltage: true }, problem: true, depletedDemo: true },
 ];
 
