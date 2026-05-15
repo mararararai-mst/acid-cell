@@ -826,6 +826,9 @@ sub, sup { font-size: 0.7em; }
 const MODES = { AUTO: 'auto', STEP: 'step' };
 let mode = MODES.AUTO;
 let playing = false;
+// 一度でも反応をスタートしたかどうか(true なら Zn²⁺ などは凍結状態で残す)
+// 初期は false → うすい塩酸(H⁺/Cl⁻)だけ、亜鉛/銅板は入っているが反応していない状態
+let hasStarted = false;
 let speedMul = 1.0;
 let stepIndex = 0;
 // 電池残量: 気泡蓄積で電圧低下するが、ダニエル電池と同じく時間で消耗もする
@@ -1130,10 +1133,12 @@ function draw() {
     }
   }
 
-  // H⁺ moving toward Cu electrode (only when hMove flag set)
-  if (activeFlags.hMove) {
-    // H⁺ がCu側に流れていく演出: 別レイヤで描画
-    drawHIonsTowardCu(L, dt);
+  // H⁺ / Cl⁻ の描画切り替え:
+  //  - hasStarted=false: drawLiquidIons (散在表示)
+  //  - hasStarted=true, hMove=true: drawHIonsTowardCu でドリフト (動的)
+  //  - hasStarted=true, hMove=false: drawHIonsTowardCu を dt=0 で呼び、最後の位置で凍結
+  if (hasStarted) {
+    drawHIonsTowardCu(L, activeFlags.hMove ? dt : 0);
   }
 
   // Generate / animate rising bubbles from Cu surface
@@ -1448,28 +1453,28 @@ function drawZnEmit(p, L) {
 }
 
 function drawLiquidIons(L) {
+  // hasStarted=false (反応開始前) のときに H⁺ と Cl⁻ を散在表示する
+  // hasStarted=true のときは drawHIonsTowardCu が両方とも担当 (dt=0 で凍結 / dt=1で動的)
+  if (hasStarted) return;
   const liquidTop = L.liquidTopY + 6;
   const liquidBot = L.liquidBottomY - 6;
   const liqLeft = L.beakerX + 10;
   const liqRight = L.beakerX + L.beakerW - 10;
-  // Cl⁻ (背景: 散在、ほぼ動かない)
+  // Cl⁻ (上半分、ゆるく揺れる)
   for (const c of clIons) {
     const x = liqLeft + (liqRight - liqLeft) * c.homeX + Math.sin(frameCount * 0.02 + c.phase) * 3;
     const y = liquidTop + (liquidBot - liquidTop) * c.homeY + Math.cos(frameCount * 0.02 + c.phase) * 3;
-    // 亜鉛板や銅板の中には描かない
     if (Math.abs(x - L.znElecX) < L.electrodeW * 0.7) continue;
     if (Math.abs(x - L.cuElecX) < L.electrodeW * 0.7) continue;
     drawIonCircle(x, y, 'Cl⁻', '#7AB89A', 220);
   }
-  // H⁺ (薄青・散在 — hMove flagがOFFのときの自由運動)
-  if (!activeFlags.hMove) {
-    for (const h of hIons) {
-      const x = liqLeft + (liqRight - liqLeft) * h.homeX + Math.sin(frameCount * 0.025 + h.phase) * 4;
-      const y = liquidTop + (liquidBot - liquidTop) * h.homeY + Math.cos(frameCount * 0.025 + h.phase) * 4;
-      if (Math.abs(x - L.znElecX) < L.electrodeW * 0.7) continue;
-      if (Math.abs(x - L.cuElecX) < L.electrodeW * 0.7) continue;
-      drawIonCircle(x, y, 'H⁺', '#7BBCDB', 230);
-    }
+  // H⁺ (下半分、ゆるく揺れる)
+  for (const h of hIons) {
+    const x = liqLeft + (liqRight - liqLeft) * h.homeX + Math.sin(frameCount * 0.025 + h.phase) * 4;
+    const y = liquidTop + (liquidBot - liquidTop) * h.homeY + Math.cos(frameCount * 0.025 + h.phase) * 4;
+    if (Math.abs(x - L.znElecX) < L.electrodeW * 0.7) continue;
+    if (Math.abs(x - L.cuElecX) < L.electrodeW * 0.7) continue;
+    drawIonCircle(x, y, 'H⁺', '#7BBCDB', 230);
   }
 }
 
@@ -1588,10 +1593,15 @@ function updateModeUI() {
     autoCtl.style.display = 'contents';
     stepCtl.style.display = 'none';
     stepInfo.classList.remove('active');
-    // 自動再生では全部 ON
-    activeFlags.zn = true; activeFlags.e = true; activeFlags.hMove = true;
-    activeFlags.bubble = true; activeFlags.stuck = true;
-    activeFlags.labels = false; activeFlags.voltage = playing;
+    // 初期 (hasStarted=false) は装置だけ表示、反応なし
+    // 一度▶を押したら zn は残る(凍結)、その他は playing 連動 (停止=時間凍結)
+    activeFlags.zn = hasStarted;
+    activeFlags.e = playing;
+    activeFlags.hMove = playing;
+    activeFlags.bubble = playing;
+    activeFlags.stuck = playing;
+    activeFlags.labels = !hasStarted; // 未スタート時は装置ラベルを表示
+    activeFlags.voltage = playing;
   } else {
     auto.classList.remove('active'); auto.setAttribute('aria-selected', 'false');
     step.classList.add('active'); step.setAttribute('aria-selected', 'true');
@@ -1627,8 +1637,18 @@ document.getElementById('mode-step').addEventListener('click', () => {
 document.getElementById('play-btn').addEventListener('click', () => {
   if (chargeLevel <= 0 && !playing) return;
   playing = !playing;
+  if (playing) hasStarted = true;
   document.getElementById('play-btn').textContent = playing ? '⏸ 一時停止' : '▶ 動かす';
-  activeFlags.voltage = playing;
+  if (mode === MODES.AUTO) {
+    // hasStarted=true なら Zn²⁺ は凍結で残す、それ以外は playing 連動
+    activeFlags.zn = hasStarted;
+    activeFlags.e = playing;
+    activeFlags.hMove = playing;
+    activeFlags.bubble = playing;
+    activeFlags.stuck = playing;
+    activeFlags.labels = !hasStarted;
+    activeFlags.voltage = playing;
+  }
 });
 
 document.getElementById('speed').addEventListener('input', (e) => {
@@ -1643,8 +1663,8 @@ document.getElementById('polish-btn').addEventListener('click', () => {
 
 document.getElementById('reset-btn').addEventListener('click', () => {
   playing = false;
+  hasStarted = false;  // 完全リセット: Zn²⁺ や電子も消える初期状態へ
   document.getElementById('play-btn').textContent = '▶ 動かす';
-  activeFlags.voltage = false;
   chargeLevel = 1.0;
   resetIons();
   for (let i = 0; i < electronPos.length; i++) {
@@ -1653,6 +1673,16 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   drawVoltMeter._cur = 0;
   document.getElementById('depleted-note').classList.remove('show');
   updateChargeUI();
+  // AUTO モードのフラグを初期状態に
+  if (mode === MODES.AUTO) {
+    activeFlags.zn = false;
+    activeFlags.e = false;
+    activeFlags.hMove = false;
+    activeFlags.bubble = false;
+    activeFlags.stuck = false;
+    activeFlags.labels = true;
+    activeFlags.voltage = false;
+  }
 });
 
 document.getElementById('prev-step').addEventListener('click', () => {
