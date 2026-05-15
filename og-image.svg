@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(180,160,120,0.18)" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="bubbleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#D0E0F0" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景 (ラボノート色) -->
+  <rect width="1200" height="630" fill="#FAF6E8"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- タイトル帯 -->
+  <text x="60" y="92" font-family="'M PLUS Rounded 1c', sans-serif" font-size="56" font-weight="800" fill="#3A3530">⚡ うすい塩酸の電池モデル</text>
+  <text x="60" y="140" font-family="'M PLUS Rounded 1c', sans-serif" font-size="28" font-weight="700" fill="#8a7a60">中3 理科 ／ 単元1-3 化学変化と電池 ／ 教科書 p.51 図4</text>
+  <line x1="60" y1="160" x2="1140" y2="160" stroke="#D97A4B" stroke-width="3" stroke-dasharray="10,6"/>
+
+  <!-- 容器 (中央のステージ) -->
+  <g transform="translate(160, 220)">
+    <!-- 電圧計 -->
+    <rect x="320" y="0" width="220" height="100" fill="#FFFFFF" stroke="#3A3530" stroke-width="3" rx="10"/>
+    <text x="430" y="32" text-anchor="middle" font-family="'M PLUS Rounded 1c', sans-serif" font-size="20" font-weight="800" fill="#3A3530">電圧計</text>
+    <path d="M 380 75 A 50 50 0 0 1 480 75" fill="none" stroke="#8a7a60" stroke-width="2"/>
+    <line x1="430" y1="75" x2="450" y2="35" stroke="#D97A4B" stroke-width="4"/>
+    <circle cx="430" cy="75" r="4" fill="#3A3530"/>
+    <text x="430" y="98" text-anchor="middle" font-family="'Kaisei Decol', serif" font-size="22" font-weight="700" fill="#D97A4B">1.10 V</text>
+
+    <!-- 導線 -->
+    <line x1="100" y1="50" x2="100" y2="160" stroke="#3A3530" stroke-width="4"/>
+    <line x1="100" y1="50" x2="320" y2="50" stroke="#3A3530" stroke-width="4"/>
+    <line x1="540" y1="50" x2="760" y2="50" stroke="#3A3530" stroke-width="4"/>
+    <line x1="760" y1="50" x2="760" y2="160" stroke="#3A3530" stroke-width="4"/>
+
+    <!-- 電子粒子 (青円) 導線上 -->
+    <g fill="#4A7BAA">
+      <circle cx="160" cy="50" r="13"/>
+      <circle cx="220" cy="50" r="13"/>
+      <circle cx="280" cy="50" r="13"/>
+      <circle cx="600" cy="50" r="13"/>
+      <circle cx="660" cy="50" r="13"/>
+      <circle cx="720" cy="50" r="13"/>
+    </g>
+    <g fill="#FFFFFF" font-family="sans-serif" font-size="14" font-weight="900" text-anchor="middle" dominant-baseline="middle">
+      <text x="160" y="51">−</text><text x="220" y="51">−</text><text x="280" y="51">−</text>
+      <text x="600" y="51">−</text><text x="660" y="51">−</text><text x="720" y="51">−</text>
+    </g>
+
+    <!-- 容器枠 -->
+    <rect x="20" y="160" width="820" height="220" fill="#FCF8E6" stroke="#8a7a60" stroke-width="4" rx="4"/>
+
+    <!-- 電極: 亜鉛 (-) -->
+    <rect x="88" y="140" width="24" height="200" fill="#B0B4B8" stroke="#5a5a5a" stroke-width="1.5"/>
+    <text x="100" y="125" text-anchor="middle" font-family="'M PLUS Rounded 1c', sans-serif" font-size="22" font-weight="800" fill="#4A7BAA">(-) 亜鉛 Zn</text>
+
+    <!-- 電極: 銅 (+) -->
+    <rect x="748" y="140" width="24" height="200" fill="#C97D4A" stroke="#7a4520" stroke-width="1.5"/>
+    <text x="760" y="125" text-anchor="middle" font-family="'M PLUS Rounded 1c', sans-serif" font-size="22" font-weight="800" fill="#D97A4B">(+) 銅 Cu</text>
+
+    <!-- 液中イオン -->
+    <!-- Zn²⁺ (オレンジ円、亜鉛側) -->
+    <g>
+      <circle cx="150" cy="240" r="22" fill="#E8A040"/>
+      <text x="150" y="245" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="800" fill="#FFFFFF">Zn²⁺</text>
+      <circle cx="180" cy="300" r="22" fill="#E8A040" opacity="0.9"/>
+      <text x="180" y="305" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="800" fill="#FFFFFF">Zn²⁺</text>
+    </g>
+    <!-- Cl⁻ (緑円、亜鉛側に寄る) -->
+    <g>
+      <circle cx="220" cy="200" r="20" fill="#7AB89A"/>
+      <text x="220" y="205" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="800" fill="#FFFFFF">Cl⁻</text>
+      <circle cx="280" cy="220" r="20" fill="#7AB89A" opacity="0.85"/>
+      <text x="280" y="225" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="800" fill="#FFFFFF">Cl⁻</text>
+    </g>
+    <!-- H⁺ (薄青円、銅側に向かう) -->
+    <g>
+      <circle cx="600" cy="260" r="20" fill="#7BBCDB"/>
+      <text x="600" y="265" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="800" fill="#FFFFFF">H⁺</text>
+      <circle cx="680" cy="290" r="20" fill="#7BBCDB" opacity="0.9"/>
+      <text x="680" y="295" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="800" fill="#FFFFFF">H⁺</text>
+    </g>
+
+    <!-- 水素気泡 (銅板側、上昇) -->
+    <g>
+      <circle cx="735" cy="240" r="14" fill="url(#bubbleGrad)" stroke="#90A8B0" stroke-width="1.5"/>
+      <circle cx="725" cy="200" r="18" fill="url(#bubbleGrad)" stroke="#90A8B0" stroke-width="1.5"/>
+      <circle cx="745" cy="170" r="12" fill="url(#bubbleGrad)" stroke="#90A8B0" stroke-width="1.5"/>
+      <text x="780" y="175" font-family="sans-serif" font-size="20" font-weight="800" fill="#1f6ea0">H₂ ↑</text>
+    </g>
+
+    <!-- 液体ラベル -->
+    <text x="430" y="400" text-anchor="middle" font-family="'M PLUS Rounded 1c', sans-serif" font-size="22" font-weight="700" fill="#6a5a40">うすい塩酸（HCl 水溶液）</text>
+  </g>
+
+  <!-- 矢印で次のページへ -->
+  <g transform="translate(60, 555)">
+    <rect x="0" y="0" width="1080" height="58" rx="29" fill="#D97A4B"/>
+    <text x="30" y="38" font-family="'M PLUS Rounded 1c', sans-serif" font-size="24" font-weight="800" fill="#FFFFFF">💡 問題点：水素が出る・電圧が下がる　→　ダニエル電池への必然性が分かる導入教材</text>
+  </g>
+</svg>

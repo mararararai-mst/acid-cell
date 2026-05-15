@@ -8,7 +8,9 @@
 <meta property="og:description" content="教科書 p.51 図4 の電池モデル。亜鉛板＋銅板＋うすい塩酸で電子の流れと水素発生を可視化。電圧が下がる「問題点」を体感し、ダニエル電池への必然性を理解できる導入教材。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://mararararai-mst.github.io/acid-cell/">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://mararararai-mst.github.io/acid-cell/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mararararai-mst.github.io/acid-cell/og-image.svg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -731,7 +733,7 @@ sub, sup { font-size: 0.7em; }
         <input type="range" id="speed" min="0.25" max="2" step="0.25" value="1">
         <span id="speed-label">×1.0</span>
       </div>
-      <button id="polish-btn" class="btn polish" title="銅板に張り付いた水素気泡を取り除く（実験で実際にやる操作）">🧽 銅板を磨く</button>
+      <button id="polish-btn" class="btn polish" title="銅板表面の気泡をリセットする（実験では銅板を取り出して気泡を取り除く操作に相当）">🧽 銅板を磨く</button>
       <button id="reset-btn" class="btn" title="うすい塩酸や金属板を新しくする">↻ 新しくする</button>
     </div>
 
@@ -743,7 +745,7 @@ sub, sup { font-size: 0.7em; }
   </div>
 
   <div class="depleted-note" id="depleted-note">
-    🔋 <strong>電池が消耗しました。</strong>気泡が銅板を覆って電圧が下がりきりました。<strong>銅板を磨く</strong>と一時的に回復しますが、本質的な解決はダニエル電池（次の単元）で実現します。↻ 新しくする でリセット。
+    🔋 <strong>電池が消耗しました。</strong>気泡が銅板を覆って電圧が下がりきりました。<strong>銅板を磨く</strong>と一時的に回復しますが、本質的な解決はダニエル電池で実現します。↻ 新しくする でリセット／画面下の <strong>「→ ダニエル電池シミュレーションを開く」</strong> でその改良版を体験しよう。
   </div>
 
   <div class="observation">
@@ -785,11 +787,11 @@ sub, sup { font-size: 0.7em; }
     <table class="compare">
       <thead><tr><th></th><th>うすい塩酸電池（このシミュ）</th><th>ダニエル電池</th></tr></thead>
       <tbody>
-        <tr><th>気体発生</th><td>水素発生（可燃性・危険）</td><td>発生しない</td></tr>
-        <tr><th>電圧</th><td>不安定（だんだん下がる）</td><td>約1.1V 長時間安定</td></tr>
-        <tr><th>水溶液</th><td>うすい塩酸 1槽</td><td>ZnSO₄ + CuSO₄ 2槽（セロハン仕切り）</td></tr>
-        <tr><th>(-)極</th><td>亜鉛板 Zn</td><td>亜鉛板 Zn（同じ）</td></tr>
-        <tr><th>(+)極</th><td>銅板 Cu（電子の受け渡しのみ）</td><td>銅板 Cu（銅が析出する）</td></tr>
+        <tr><th>💥 気体発生</th><td>水素発生（可燃性・危険）</td><td>発生しない</td></tr>
+        <tr><th>📉 電圧</th><td>不安定（だんだん下がる）</td><td>約1.1V 長時間安定</td></tr>
+        <tr><th>🌊 水溶液</th><td>うすい塩酸 1槽</td><td>ZnSO₄ + CuSO₄ 2槽（セロハン仕切り）</td></tr>
+        <tr><th>🔋 (-)極</th><td>亜鉛板 Zn</td><td>亜鉛板 Zn（同じ）</td></tr>
+        <tr><th>🔋 (+)極</th><td>銅板 Cu（電子の受け渡しのみ）</td><td>銅板 Cu（銅が析出する）</td></tr>
       </tbody>
     </table>
     <a class="next-link" href="https://mararararai-mst.github.io/daniel-cell/" target="_blank" rel="noopener">→ ダニエル電池シミュレーションを開く</a>
@@ -850,7 +852,7 @@ const STEPS = [
     flags: { zn: true, e: true, hMove: true, bubble: true, stuck: false, labels: false, voltage: true }, problem: false },
   { title: '💥 問題点①：危険な気体が発生', desc: '発生している水素は可燃性の気体です。火が近くにあると爆発的に燃える危険があります。だから実際の実験では火気厳禁。これがこの電池の弱点その1。',
     flags: { zn: true, e: true, hMove: true, bubble: true, stuck: false, labels: false, voltage: true }, problem: true },
-  { title: '📉 問題点②：電圧が下がる', desc: '時間がたつと、水素気泡が銅板の表面に張り付き、電子の受け渡しを妨げるようになります。すると電圧計の針がだんだん下がっていきます。\n「電圧が一定でない」のがこの電池の弱点その2。\n→ この問題を解決したのが、教科書 p.56 の「ダニエル電池」です。',
+  { title: '📉 問題点②：電圧が下がる', desc: '時間がたつと、水素気泡が銅板の表面に張り付き、電子の受け渡しを妨げるようになります。すると電圧計の針がだんだん下がっていきます。\n「電圧が一定でない」のがこの電池の弱点その2。\n→ この問題を解決したのが、教科書 p.56 の「ダニエル電池」です。\n↓ 画面下の「→ ダニエル電池シミュレーションを開く」を押してみよう。',
     flags: { zn: true, e: true, hMove: true, bubble: true, stuck: true, labels: false, voltage: true }, problem: true, depletedDemo: true },
 ];
 
