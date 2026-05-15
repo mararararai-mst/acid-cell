@@ -800,6 +800,7 @@ sub, sup { font-size: 0.7em; }
     <div class="explainer-body">
       <p>うすい塩酸電池では、(+)極の銅板の表面に <strong>水素気泡が張り付いて</strong> いきます。気泡は電気を通さないので、銅板の <strong>電子の受け渡しが妨げられ</strong>、電圧がだんだん下がってしまいます。</p>
       <p>この現象を <strong>分極</strong> といいます。「電圧が安定しない」のはこのため。実験では銅板を磨くと一時的に気泡が取れて電圧が回復しますが、すぐにまた気泡がたまってしまいます。</p>
+      <p>また、シミュ画面では <strong>Cl⁻ が亜鉛板側へゆっくり集まる</strong> 動きも描いています。亜鉛が溶けて Zn²⁺ が増えると、電気的なバランスをとるために陰イオンの Cl⁻ がそちら側に寄ってくるためです（この「電気のバランス」が、ダニエル電池でセロハンを通るイオン移動の伏線になります）。</p>
       <div class="advanced">
         <strong>教科書では：</strong>「分極」という用語は本文に登場しません。教科書 p.58 では「<strong>51ページの図4の電池のように、電極の表面から気体は発生しなかった</strong>」（ダニエル電池の説明）と、塩酸電池との対比だけで述べられています。
       </div>
@@ -972,18 +973,21 @@ function makeZnEmit(t) {
   return { t: t, surfaceY: Math.random() };
 }
 function makeHIon(seed) {
-  // H⁺ は液中を漂い、銅板付近で「吸い込まれる」演出
+  // H⁺ は液中下寄りで Cl⁻ と重ならないように。電流時は銅板へ吸い込まれる
   return {
     t: seed,
-    homeX: 0.20 + Math.random() * 0.60,   // 液中での通常位置(0..1 of beaker width)
-    homeY: 0.20 + Math.random() * 0.70,
+    homeX: 0.20 + Math.random() * 0.60,
+    homeY: 0.45 + Math.random() * 0.45,   // 下半分 (0.45..0.90)
     phase: Math.random() * Math.PI * 2,
   };
 }
 function makeClIon(seed) {
+  // Cl⁻ は液中上寄りで H⁺ と重ならないように。電流時は亜鉛板側へドリフト
+  // (Zn²⁺ が増える側に集まり、電気的中性を保つ)
   return {
-    homeX: 0.15 + Math.random() * 0.70,
-    homeY: 0.20 + Math.random() * 0.70,
+    t: seed,
+    homeX: 0.20 + Math.random() * 0.60,
+    homeY: 0.10 + Math.random() * 0.30,   // 上半分 (0.10..0.40)
     phase: Math.random() * Math.PI * 2,
   };
 }
@@ -1472,29 +1476,30 @@ function drawHIonsTowardCu(L, dt) {
   // H⁺ が銅板に向かって流れる
   for (const h of hIons) {
     h.t += 0.004 * dt;
-    if (h.t > 1) { h.t = 0; h.homeY = 0.20 + Math.random() * 0.70; h.homeX = 0.20 + Math.random() * 0.60; }
-    // start position
+    if (h.t > 1) { h.t = 0; h.homeY = 0.45 + Math.random() * 0.45; h.homeX = 0.20 + Math.random() * 0.60; }
     const startX = liqLeft + (liqRight - liqLeft) * h.homeX;
     const startY = liquidTop + (liquidBot - liquidTop) * h.homeY;
-    // target: cu electrode surface (left side of Cu rod)
     const targetX = L.cuElecX - L.electrodeW * 0.6;
-    const targetY = startY + Math.sin(h.t * Math.PI * 2 + h.phase) * 6;
     const x = lerp(startX, targetX, Math.pow(h.t, 1.3));
-    const y = lerp(startY, targetY, h.t);
-    // 銅板の内側に行ったら描画しない
+    const y = startY + Math.sin(h.t * Math.PI * 2 + h.phase) * 6;
     if (x > L.cuElecX - L.electrodeW * 0.4) continue;
-    // 亜鉛板を避ける
     if (Math.abs(x - L.znElecX) < L.electrodeW * 0.7) continue;
     const alpha = (h.t < 0.15 ? h.t / 0.15 : (h.t > 0.80 ? (1 - h.t) / 0.20 : 1)) * 240;
     drawIonCircle(x, y, 'H⁺', '#7BBCDB', alpha);
   }
-  // Cl⁻ も静かに表示（背景）
+  // Cl⁻ が亜鉛板側へドリフト (電気的中性を保つため。Zn²⁺が増える側に陰イオンが集まる)
   for (const c of clIons) {
-    const x = liqLeft + (liqRight - liqLeft) * c.homeX + Math.sin(frameCount * 0.02 + c.phase) * 3;
-    const y = liquidTop + (liquidBot - liquidTop) * c.homeY + Math.cos(frameCount * 0.02 + c.phase) * 3;
-    if (Math.abs(x - L.znElecX) < L.electrodeW * 0.7) continue;
+    c.t += 0.003 * dt;
+    if (c.t > 1) { c.t = 0; c.homeY = 0.10 + Math.random() * 0.30; c.homeX = 0.20 + Math.random() * 0.60; }
+    const startX = liqLeft + (liqRight - liqLeft) * c.homeX;
+    const startY = liquidTop + (liquidBot - liquidTop) * c.homeY;
+    const targetX = L.znElecX + L.electrodeW * 0.6;
+    const x = lerp(startX, targetX, Math.pow(c.t, 1.3));
+    const y = startY + Math.sin(c.t * Math.PI * 2 + c.phase) * 5;
+    if (x < L.znElecX + L.electrodeW * 0.4) continue;
     if (Math.abs(x - L.cuElecX) < L.electrodeW * 0.7) continue;
-    drawIonCircle(x, y, 'Cl⁻', '#7AB89A', 200);
+    const alpha = (c.t < 0.15 ? c.t / 0.15 : (c.t > 0.80 ? (1 - c.t) / 0.20 : 1)) * 230;
+    drawIonCircle(x, y, 'Cl⁻', '#7AB89A', alpha);
   }
 }
 
