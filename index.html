@@ -731,8 +731,8 @@ sub, sup { font-size: 0.7em; }
       </div>
       <div class="slider-wrap">
         <span>速さ</span>
-        <input type="range" id="speed" min="0.25" max="2" step="0.25" value="1">
-        <span id="speed-label">×1.0</span>
+        <input type="range" id="speed" min="0.25" max="2" step="0.25" value="0.5">
+        <span id="speed-label">×0.5</span>
       </div>
       <button id="polish-btn" class="btn polish" title="銅板表面の気泡をリセットする（実験では銅板を取り出して気泡を取り除く操作に相当）">🧽 銅板を磨く</button>
       <button id="reset-btn" class="btn" title="うすい塩酸や金属板を新しくする">↻ 新しくする</button>
@@ -833,7 +833,7 @@ let electrodesIn = false;
 let electrodeAnim = 0; // 0..1 で電極の降下アニメ
 // 一度でも反応をスタートしたかどうか
 let hasStarted = false;
-let speedMul = 1.0;
+let speedMul = 0.5;
 let stepIndex = 0;
 // 電池残量: 気泡蓄積で電圧低下するが、ダニエル電池と同じく時間で消耗もする
 let chargeLevel = 1.0;
@@ -1096,7 +1096,21 @@ function draw() {
 
   // 電極を入れるアニメ進行
   if (electrodesIn && electrodeAnim < 1) {
+    const prev = electrodeAnim;
     electrodeAnim = Math.min(1, electrodeAnim + 0.04);
+    // アニメ完了の瞬間に AUTO モードなら自動で反応スタート
+    if (prev < 1 && electrodeAnim >= 1 && !hasStarted && mode === MODES.AUTO && chargeLevel > 0) {
+      playing = true;
+      hasStarted = true;
+      document.getElementById('play-btn').textContent = '⏸ 一時停止';
+      activeFlags.zn = true;
+      activeFlags.e = true;
+      activeFlags.hMove = true;
+      activeFlags.bubble = true;
+      activeFlags.stuck = true;
+      activeFlags.labels = false;
+      activeFlags.voltage = true;
+    }
   }
 
   // 電極が入っている (or アニメ中) なら導線・電圧計・電極を描画
