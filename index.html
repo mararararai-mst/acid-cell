@@ -722,7 +722,8 @@ sub, sup { font-size: 0.7em; }
     </div>
 
     <div id="auto-controls" style="display: contents;">
-      <button id="play-btn" class="btn primary">▶ 動かす</button>
+      <button id="insert-btn" class="btn primary" title="亜鉛板と銅板をうすい塩酸に入れる">⬇ 電極を入れる</button>
+      <button id="play-btn" class="btn primary" style="display:none;">▶ 動かす</button>
       <div class="charge-bar-wrap" title="電池残量">
         <span class="charge-label">残量</span>
         <div class="charge-bar"><div id="charge-bar-fill"></div></div>
@@ -826,8 +827,11 @@ sub, sup { font-size: 0.7em; }
 const MODES = { AUTO: 'auto', STEP: 'step' };
 let mode = MODES.AUTO;
 let playing = false;
-// 一度でも反応をスタートしたかどうか(true なら Zn²⁺ などは凍結状態で残す)
-// 初期は false → うすい塩酸(H⁺/Cl⁻)だけ、亜鉛/銅板は入っているが反応していない状態
+// 電極が水溶液に入れられたかどうか
+// 初期 false → うすい塩酸 + H⁺/Cl⁻ だけ、電極なし
+let electrodesIn = false;
+let electrodeAnim = 0; // 0..1 で電極の降下アニメ
+// 一度でも反応をスタートしたかどうか
 let hasStarted = false;
 let speedMul = 1.0;
 let stepIndex = 0;
@@ -1074,15 +1078,18 @@ function draw() {
   drawBeaker(L);
   drawBeakerFrame(L);
 
-  // Wires
-  drawWires(L);
+  // 電極を入れるアニメ進行
+  if (electrodesIn && electrodeAnim < 1) {
+    electrodeAnim = Math.min(1, electrodeAnim + 0.04);
+  }
 
-  // Volt meter
-  drawVoltMeter(L);
-
-  // Electrodes (over liquid)
-  drawElectrode(L.znElecX, L, 'zinc', '亜鉛 (Zn)', '(-)');
-  drawElectrode(L.cuElecX, L, 'copper', '銅 (Cu)', '(+)');
+  // 電極が入っている (or アニメ中) なら導線・電圧計・電極を描画
+  if (electrodesIn) {
+    drawWires(L);
+    drawVoltMeter(L);
+    drawElectrode(L.znElecX, L, 'zinc', '亜鉛 (Zn)', '(-)');
+    drawElectrode(L.cuElecX, L, 'copper', '銅 (Cu)', '(+)');
+  }
 
   // Beaker label
   drawBeakerLabel(L);
@@ -1361,28 +1368,35 @@ function drawVoltMeter(L) {
 }
 
 function drawElectrode(x, L, kind, label, sign) {
-  const top = L.electrodeTopY;
-  const bot = L.liquidBottomY - 8;
+  // electrodeAnim でアニメ: 0=画面外上方, 1=通常位置
+  const finalTop = L.electrodeTopY;
+  const finalBot = L.liquidBottomY - 8;
+  const length = finalBot - finalTop;
+  const startTop = -length * 1.1; // canvas 上端より上 (見えない位置)
+  const top = lerp(startTop, finalTop, electrodeAnim);
+  const bot = top + length;
   let w;
   if (kind === 'zinc') {
-    // 亜鉛が溶けてやせ細る
     w = L.electrodeW * (0.55 + chargeLevel * 0.45);
   } else {
-    // 銅板は変化しない
     w = L.electrodeW * 1.0;
   }
   noStroke();
   if (kind === 'zinc') fill(176, 180, 184); else fill(201, 125, 74);
-  rect(x - w / 2, top, w, bot - top, 4);
-  // shading
+  rect(x - w / 2, top, w, length, 4);
   fill(255, 255, 255, 60);
-  rect(x - w / 2 + 2, top + 4, 2, bot - top - 8);
-  // label above
-  textAlign(CENTER, BOTTOM);
-  textSize(Math.max(13, canvasW / 65));
-  textStyle(BOLD);
-  fill(kind === 'zinc' ? '#4A7BAA' : '#D97A4B');
-  text(sign + ' ' + label, x, top - 24);
+  rect(x - w / 2 + 2, top + 4, 2, length - 8);
+  // ラベルは electrodeAnim=1 になったら表示
+  if (electrodeAnim >= 0.95) {
+    const labelAlpha = (electrodeAnim - 0.95) / 0.05 * 255;
+    textAlign(CENTER, BOTTOM);
+    textSize(Math.max(13, canvasW / 65));
+    textStyle(BOLD);
+    const c = color(kind === 'zinc' ? '#4A7BAA' : '#D97A4B');
+    c.setAlpha(labelAlpha);
+    fill(c);
+    text(sign + ' ' + label, x, finalTop - 24);
+  }
 }
 
 function drawBeakerLabel(L) {
@@ -1600,7 +1614,7 @@ function updateModeUI() {
     activeFlags.hMove = playing;
     activeFlags.bubble = playing;
     activeFlags.stuck = playing;
-    activeFlags.labels = !hasStarted; // 未スタート時は装置ラベルを表示
+    activeFlags.labels = electrodesIn && !hasStarted; // 電極を入れた後、未スタート時にラベル表示
     activeFlags.voltage = playing;
   } else {
     auto.classList.remove('active'); auto.setAttribute('aria-selected', 'false');
@@ -1614,19 +1628,30 @@ function updateModeUI() {
 
 document.getElementById('mode-auto').addEventListener('click', () => {
   mode = MODES.AUTO;
-  // STEP モードのデモで張り付いた気泡をクリア(自動再生は最初からスタートしたい)
   stuckBubbles = [];
   risingBubbles = [];
   chargeLevel = 1.0;
   drawVoltMeter._cur = 0;
   document.getElementById('depleted-note').classList.remove('show');
+  // ボタン表示は electrodesIn の状態に合わせる
+  if (electrodesIn) {
+    document.getElementById('insert-btn').style.display = 'none';
+    document.getElementById('play-btn').style.display = '';
+  } else {
+    document.getElementById('insert-btn').style.display = '';
+    document.getElementById('play-btn').style.display = 'none';
+  }
   updateModeUI();
 });
 document.getElementById('mode-step').addEventListener('click', () => {
   mode = MODES.STEP;
   playing = false;
   document.getElementById('play-btn').textContent = '▶ 動かす';
-  // AUTO で蓄積した気泡をクリアして STEP 1 から始めるとき装置だけの状態に
+  // ステップモードは電極が入っている前提でスタート (STEP 1「装置の構成」を見せるため)
+  electrodesIn = true;
+  electrodeAnim = 1;
+  document.getElementById('insert-btn').style.display = 'none';
+  document.getElementById('play-btn').style.display = '';
   stuckBubbles = [];
   risingBubbles = [];
   stepIndex = 0;
@@ -1634,19 +1659,29 @@ document.getElementById('mode-step').addEventListener('click', () => {
   updateModeUI();
 });
 
+document.getElementById('insert-btn').addEventListener('click', () => {
+  electrodesIn = true;
+  document.getElementById('insert-btn').style.display = 'none';
+  document.getElementById('play-btn').style.display = '';
+  // activeFlags を再計算 (labels を更新)
+  if (mode === MODES.AUTO) {
+    activeFlags.labels = !hasStarted;
+  }
+});
+
 document.getElementById('play-btn').addEventListener('click', () => {
+  if (!electrodesIn) return; // 電極が入っていなければ動かせない
   if (chargeLevel <= 0 && !playing) return;
   playing = !playing;
   if (playing) hasStarted = true;
   document.getElementById('play-btn').textContent = playing ? '⏸ 一時停止' : '▶ 動かす';
   if (mode === MODES.AUTO) {
-    // hasStarted=true なら Zn²⁺ は凍結で残す、それ以外は playing 連動
     activeFlags.zn = hasStarted;
     activeFlags.e = playing;
     activeFlags.hMove = playing;
     activeFlags.bubble = playing;
     activeFlags.stuck = playing;
-    activeFlags.labels = !hasStarted;
+    activeFlags.labels = electrodesIn && !hasStarted;
     activeFlags.voltage = playing;
   }
 });
@@ -1663,8 +1698,12 @@ document.getElementById('polish-btn').addEventListener('click', () => {
 
 document.getElementById('reset-btn').addEventListener('click', () => {
   playing = false;
-  hasStarted = false;  // 完全リセット: Zn²⁺ や電子も消える初期状態へ
+  hasStarted = false;
+  electrodesIn = false;  // 電極を取り出して塩酸だけの初期状態に戻す
+  electrodeAnim = 0;
   document.getElementById('play-btn').textContent = '▶ 動かす';
+  document.getElementById('insert-btn').style.display = '';
+  document.getElementById('play-btn').style.display = 'none';
   chargeLevel = 1.0;
   resetIons();
   for (let i = 0; i < electronPos.length; i++) {
@@ -1673,14 +1712,13 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   drawVoltMeter._cur = 0;
   document.getElementById('depleted-note').classList.remove('show');
   updateChargeUI();
-  // AUTO モードのフラグを初期状態に
   if (mode === MODES.AUTO) {
     activeFlags.zn = false;
     activeFlags.e = false;
     activeFlags.hMove = false;
     activeFlags.bubble = false;
     activeFlags.stuck = false;
-    activeFlags.labels = true;
+    activeFlags.labels = false; // 電極が無いのでラベルも非表示
     activeFlags.voltage = false;
   }
 });
