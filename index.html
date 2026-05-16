@@ -1420,7 +1420,8 @@ function drawElectrode(x, L, kind, label, sign) {
   const bot = top + length;
   let w;
   if (kind === 'zinc') {
-    w = L.electrodeW * (0.55 + chargeLevel * 0.45);
+    // 亜鉛が大量に溶ける → 最終は 25% まで細くなる
+    w = L.electrodeW * (0.25 + chargeLevel * 0.75);
   } else {
     w = L.electrodeW * 1.0;
   }
