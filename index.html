@@ -1102,7 +1102,7 @@ function draw() {
     if (prev < 1 && electrodeAnim >= 1 && !hasStarted && mode === MODES.AUTO && chargeLevel > 0) {
       playing = true;
       hasStarted = true;
-      document.getElementById('play-btn').textContent = '⏸ 一時停止';
+      document.getElementById('play-btn').textContent = '⏸ 止める';
       activeFlags.zn = true;
       activeFlags.e = true;
       activeFlags.hMove = true;
@@ -1729,11 +1729,23 @@ document.getElementById('insert-btn').addEventListener('click', () => {
 });
 
 document.getElementById('play-btn').addEventListener('click', () => {
-  if (!electrodesIn) return; // 電極が入っていなければ動かせない
+  if (!electrodesIn) return;
   if (chargeLevel <= 0 && !playing) return;
   playing = !playing;
-  if (playing) hasStarted = true;
-  document.getElementById('play-btn').textContent = playing ? '⏸ 一時停止' : '▶ 動かす';
+  if (playing) {
+    hasStarted = true;
+  } else {
+    // ⏸ = 反応を止めて塩酸 (H⁺/Cl⁻) だけの状態に戻す
+    // (電極を取り出すイメージ。電極自体は液中に残ったまま)
+    hasStarted = false;
+    zn2Accumulated = [];
+    stuckBubbles = [];
+    risingBubbles = [];
+    chargeLevel = 1.0;
+    drawVoltMeter._cur = 0;
+    document.getElementById('depleted-note').classList.remove('show');
+  }
+  document.getElementById('play-btn').textContent = playing ? '⏸ 止める' : '▶ 動かす';
   if (mode === MODES.AUTO) {
     activeFlags.zn = hasStarted;
     activeFlags.e = playing;
