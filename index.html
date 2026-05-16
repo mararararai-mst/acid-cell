@@ -414,8 +414,24 @@ input[type="range"] {
   color: #8a7a60;
   font-weight: 700;
 }
-.reactions {
+.info-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 14px;
   margin-top: 8px;
+  align-items: stretch;
+}
+.info-row .notes {
+  margin-top: 0;
+  background: var(--paper);
+  border: 2px solid #EADFC4;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #5a4a30;
+}
+.reactions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
@@ -571,6 +587,7 @@ sub, sup { font-size: 0.7em; }
 
 @media (max-width: 720px) {
   .reactions { grid-template-columns: 1fr; }
+  .info-row { grid-template-columns: 1fr; }
   .btn { padding: 7px 14px; font-size: 13px; }
 }
 @media (max-width: 600px) {
@@ -767,20 +784,22 @@ sub, sup { font-size: 0.7em; }
     <div class="step-desc" id="step-desc"></div>
   </div>
 
-  <div class="reactions">
-    <div class="rx minus">
-      <span class="label">(-)極 ／ 亜鉛側</span>
-      Zn → Zn<sup>2+</sup> + 2e<sup>-</sup>
+  <div class="info-row">
+    <div class="reactions">
+      <div class="rx minus">
+        <span class="label">(-)極 ／ 亜鉛側</span>
+        Zn → Zn<sup>2+</sup> + 2e<sup>-</sup>
+      </div>
+      <div class="rx plus">
+        <span class="label">(+)極 ／ 銅側</span>
+        2H<sup>+</sup> + 2e<sup>-</sup> → (2H) → H<sub>2</sub>
+      </div>
     </div>
-    <div class="rx plus">
-      <span class="label">(+)極 ／ 銅側</span>
-      2H<sup>+</sup> + 2e<sup>-</sup> → (2H) → H<sub>2</sub>
-    </div>
-  </div>
 
-  <p class="notes">
-    亜鉛板と銅板をうすい塩酸に入れ、上で導線でつなぐと電池になります。(-)極の亜鉛が溶け、(+)極の銅板から水素が発生するのが教科書 p.51 図4 の電池モデルです。化学変化を利用して、物質のもつ <strong>化学エネルギーを電気エネルギーに変える装置</strong> を電池といいます（教科書 p.50）。
-  </p>
+    <p class="notes">
+      亜鉛板と銅板をうすい塩酸に入れ、上で導線でつなぐと電池になります。(-)極の亜鉛が溶け、(+)極の銅板から水素が発生するのが教科書 p.51 図4 の電池モデルです。化学変化を利用して、物質のもつ <strong>化学エネルギーを電気エネルギーに変える装置</strong> を電池といいます（教科書 p.50）。
+    </p>
+  </div>
 
   <div class="next-card">
     <div class="next-title">💡 この電池の問題点を克服したのが <strong>ダニエル電池</strong></div>
