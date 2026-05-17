@@ -1356,16 +1356,26 @@ function drawDirectionArrows(L) {
   const leftMidX = (L.wireZnTop.x + L.voltMeterX) / 2;
   const rightMidX = (L.voltMeterX + L.voltMeterW + L.wireCuTop.x) / 2;
   const wireY = L.wireZnTop.y;
-  const offsetY = 30; // wire からの距離を 18→30 に (電子粒子と矢印ラベルが被らないように)
+  const offsetY = 22;
   const arrowLen = canvasW * 0.05;
 
-  // 電流(I) — 赤、Cu→Zn (上側)
-  drawArrow(rightMidX + arrowLen / 2, wireY - offsetY, rightMidX - arrowLen / 2, wireY - offsetY, '#D9533C', 'I (電流)');
+  // 矢印本体のみ描画 (ラベルは別途、電子粒子と被らない位置に配置)
+  drawArrow(rightMidX + arrowLen / 2, wireY - offsetY, rightMidX - arrowLen / 2, wireY - offsetY, '#D9533C', null);
   drawArrow(leftMidX + arrowLen / 2, wireY - offsetY, leftMidX - arrowLen / 2, wireY - offsetY, '#D9533C', null);
-
-  // 電子(e⁻) — 青、Zn→Cu (下側)
-  drawArrow(leftMidX - arrowLen / 2, wireY + offsetY, leftMidX + arrowLen / 2, wireY + offsetY, '#4A7BAA', 'e⁻ (電子)');
+  drawArrow(leftMidX - arrowLen / 2, wireY + offsetY, leftMidX + arrowLen / 2, wireY + offsetY, '#4A7BAA', null);
   drawArrow(rightMidX - arrowLen / 2, wireY + offsetY, rightMidX + arrowLen / 2, wireY + offsetY, '#4A7BAA', null);
+
+  // ラベルを電子粒子 (wire上) と被らないように上下に振り分ける:
+  //   I (電流) は上の矢印の更に「上」、e⁻ (電子) は下の矢印の更に「下」
+  noStroke();
+  textSize(Math.max(11, canvasW / 90));
+  textStyle(BOLD);
+  textAlign(CENTER, BOTTOM);
+  fill('#D9533C');
+  text('I (電流)', rightMidX, wireY - offsetY - 5);
+  textAlign(CENTER, TOP);
+  fill('#4A7BAA');
+  text('e⁻ (電子)', leftMidX, wireY + offsetY + 5);
 }
 
 function drawArrow(x1, y1, x2, y2, colorHex, label) {
