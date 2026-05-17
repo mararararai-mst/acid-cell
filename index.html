@@ -1356,7 +1356,7 @@ function drawDirectionArrows(L) {
   const leftMidX = (L.wireZnTop.x + L.voltMeterX) / 2;
   const rightMidX = (L.voltMeterX + L.voltMeterW + L.wireCuTop.x) / 2;
   const wireY = L.wireZnTop.y;
-  const offsetY = 18;
+  const offsetY = 30; // wire からの距離を 18→30 に (電子粒子と矢印ラベルが被らないように)
   const arrowLen = canvasW * 0.05;
 
   // 電流(I) — 赤、Cu→Zn (上側)
@@ -1385,10 +1385,10 @@ function drawArrow(x1, y1, x2, y2, colorHex, label) {
   );
   if (label) {
     textAlign(CENTER, BOTTOM);
-    textSize(Math.max(10, canvasW / 100));
+    textSize(Math.max(11, canvasW / 90));
     textStyle(BOLD);
     fill(colorHex);
-    text(label, (x1 + x2) / 2, Math.min(y1, y2) - 4);
+    text(label, (x1 + x2) / 2, Math.min(y1, y2) - 8); // 矢印から離す: -4→-8
   }
   pop();
 }
