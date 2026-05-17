@@ -1475,8 +1475,8 @@ function drawElectrode(x, L, kind, label, sign) {
 
 function drawBeakerLabel(L) {
   textAlign(CENTER, BOTTOM);
-  textSize(Math.max(11, canvasW / 82));
-  textStyle(BOLD);
+  textSize(Math.max(12, canvasW / 78));
+  textStyle(NORMAL);  // BOLD だとシステムフォント太字で袋文字風に滲むため
   fill(80, 70, 50);
   text('うすい塩酸（HCl 水溶液）', L.beakerX + L.beakerW / 2, L.beakerY + L.beakerH + 22);
 }
