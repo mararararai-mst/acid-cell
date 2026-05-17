@@ -208,12 +208,12 @@ header.title .sub {
 .controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
-  margin-top: 8px;
+  margin-top: 6px;
   background: var(--paper);
   border-radius: 12px;
-  padding: 6px 12px;
+  padding: 6px 10px;
   border: 2px solid #EADFC4;
 }
 .mode-toggle {
@@ -226,10 +226,10 @@ header.title .sub {
 .mode-toggle button {
   background: transparent;
   border: none;
-  padding: 8px 18px;
+  padding: 6px 14px;
   font-family: inherit;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   border-radius: 999px;
   cursor: pointer;
   color: #8a7a60;
@@ -243,10 +243,10 @@ header.title .sub {
   background: #fff;
   border: 2px solid var(--ink);
   border-radius: 999px;
-  padding: 8px 18px;
+  padding: 6px 14px;
   font-family: inherit;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   color: var(--ink);
   box-shadow: 2px 2px 0 var(--ink);
@@ -274,19 +274,19 @@ header.title .sub {
   color: #6a5a40;
 }
 input[type="range"] {
-  width: 130px;
+  width: 90px;
   accent-color: var(--accent);
 }
 .charge-bar-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 12px;
   font-weight: 700;
   color: #6a5a40;
 }
 .charge-bar {
-  width: 110px;
+  width: 80px;
   height: 12px;
   background: #ECE3CC;
   border-radius: 999px;
@@ -741,6 +741,8 @@ sub, sup { font-size: 0.7em; }
     <div id="auto-controls" style="display: contents;">
       <button id="insert-btn" class="btn primary" title="亜鉛板と銅板をうすい塩酸に入れる">⬇ 電極を入れる</button>
       <button id="play-btn" class="btn primary" style="display:none;">▶ 動かす</button>
+      <button id="reset-btn" class="btn" title="うすい塩酸や金属板を新しくする">↻ 新しくする</button>
+      <button id="polish-btn" class="btn polish" title="銅板表面の気泡をリセットする（実験では銅板を取り出して気泡を取り除く操作に相当）">🧽 銅板を磨く</button>
       <div class="charge-bar-wrap" title="電池残量">
         <span class="charge-label">残量</span>
         <div class="charge-bar"><div id="charge-bar-fill"></div></div>
@@ -751,8 +753,6 @@ sub, sup { font-size: 0.7em; }
         <input type="range" id="speed" min="0.25" max="2" step="0.25" value="0.5">
         <span id="speed-label">×0.5</span>
       </div>
-      <button id="polish-btn" class="btn polish" title="銅板表面の気泡をリセットする（実験では銅板を取り出して気泡を取り除く操作に相当）">🧽 銅板を磨く</button>
-      <button id="reset-btn" class="btn" title="うすい塩酸や金属板を新しくする">↻ 新しくする</button>
     </div>
 
     <div id="step-controls" style="display: none; gap: 10px; align-items: center;">
