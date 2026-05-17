@@ -1328,8 +1328,8 @@ function drawBeaker(L) {
 
 function drawBeakerFrame(L) {
   noFill();
-  stroke(140, 130, 110, 200);
-  strokeWeight(3);
+  stroke(160, 150, 130, 120);  // 薄く: 200→120
+  strokeWeight(1.8);            // 細く: 3→1.8
   rect(L.beakerX, L.beakerY, L.beakerW, L.beakerH, 4, 4, 14, 14);
 }
 
@@ -1476,9 +1476,10 @@ function drawElectrode(x, L, kind, label, sign) {
 function drawBeakerLabel(L) {
   textAlign(CENTER, BOTTOM);
   textSize(Math.max(12, canvasW / 78));
-  textStyle(NORMAL);  // BOLD だとシステムフォント太字で袋文字風に滲むため
+  textStyle(BOLD);
   fill(80, 70, 50);
-  text('うすい塩酸（HCl 水溶液）', L.beakerX + L.beakerW / 2, L.beakerY + L.beakerH + 22);
+  // 容器枠から少し離して「囲われている」感を解消 (22→32)
+  text('うすい塩酸（HCl 水溶液）', L.beakerX + L.beakerW / 2, L.beakerY + L.beakerH + 32);
 }
 
 function drawLabels(L) {
