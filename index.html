@@ -1666,13 +1666,18 @@ function drawIonCircle(x, y, label, colorHex, alpha) {
   const c = color(colorHex);
   c.setAlpha(alpha);
   fill(c);
-  const r = Math.max(20, canvasW * 0.022);
+  const r = Math.max(22, canvasW * 0.024);
   ellipse(x, y, r, r);
-  fill(255, alpha);
+  // 袋文字 (白文字 + 濃い縁) で薄い塩酸背景でも読みやすく
+  drawingContext.lineJoin = 'round';
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
-  textSize(r * 0.38);
+  textSize(r * 0.46);
+  stroke(40, 35, 50, alpha);
+  strokeWeight(3);
+  fill(255, alpha);
   text(label, x, y);
+  noStroke();
 }
 
 // ===== UI =====
