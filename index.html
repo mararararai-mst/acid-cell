@@ -1474,15 +1474,18 @@ function drawElectrode(x, L, kind, label, sign) {
   fill(255, 255, 255, 60);
   rect(x - w / 2 + 2, top + 4, 2, length - 8);
   // ラベルは electrodeAnim=1 になったら表示
+  // 電極の上部 (中) に白文字で簡潔に表示 → 矢印ラベル (e⁻/I) と完全分離
+  // 「亜鉛」「銅」の漢字説明は (+)極/(-)極 オーバーレイに任せる
   if (electrodeAnim >= 0.95) {
     const labelAlpha = (electrodeAnim - 0.95) / 0.05 * 255;
-    textAlign(CENTER, BOTTOM);
-    textSize(Math.max(13, canvasW / 65));
+    textAlign(CENTER, TOP);
+    textSize(Math.max(11, canvasW / 78));
     textStyle(BOLD);
-    const c = color(kind === 'zinc' ? '#4A7BAA' : '#D97A4B');
-    c.setAlpha(labelAlpha);
-    fill(c);
-    text(sign + ' ' + label, x, finalTop - 24);
+    fill(255, labelAlpha);
+    text(sign, x, top + 4);
+    // 元素記号 (Zn/Cu) を少し下に
+    textSize(Math.max(12, canvasW / 70));
+    text(kind === 'zinc' ? 'Zn' : 'Cu', x, top + 4 + Math.max(13, canvasW / 70));
   }
 }
 
