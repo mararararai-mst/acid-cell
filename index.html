@@ -1534,14 +1534,19 @@ function drawZn2(p, L) {
 }
 
 function drawZn2Accumulated(L) {
-  const liquidTop = L.liquidTopY + 6;
-  const liquidBot = L.liquidBottomY - 8;
+  // 円の直径を考慮して液中の安全領域を計算
+  const r = Math.max(22, canvasW * 0.024); // drawIonCircle の直径と同じ
+  const margin = r / 2 + 4; // 半径＋ゆらぎ余裕
+  const safeTop = L.liquidTopY + margin;
+  const safeBot = L.liquidBottomY - margin;
   const liqLeft = L.beakerX + 10;
   const liqRight = L.beakerX + L.beakerW - 10;
   for (const z of zn2Accumulated) {
-    if (z.age < 60) z.age += 1; // 60フレームで完全表示
+    if (z.age < 60) z.age += 1;
     const x = liqLeft + (liqRight - liqLeft) * z.homeX + Math.sin(frameCount * 0.015 + z.phase) * 4;
-    const y = liquidTop + (liquidBot - liquidTop) * z.homeY + Math.cos(frameCount * 0.015 + z.phase) * 4;
+    let y = safeTop + (safeBot - safeTop) * z.homeY + Math.cos(frameCount * 0.015 + z.phase) * 4;
+    // 二重防御: y を clamp して絶対にはみ出ない
+    y = Math.max(safeTop, Math.min(safeBot, y));
     if (Math.abs(x - L.znElecX) < L.electrodeW * 0.7) continue;
     if (Math.abs(x - L.cuElecX) < L.electrodeW * 0.7) continue;
     const fadeIn = z.age / 60;
