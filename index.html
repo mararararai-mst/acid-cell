@@ -852,6 +852,8 @@ let electrodesIn = false;
 let electrodeAnim = 0; // 0..1 で電極の降下アニメ
 // 一度でも反応をスタートしたかどうか
 let hasStarted = false;
+// 反応を開始したフレーム (ramp-up 用)
+let reactionStartFrame = -1;
 let speedMul = 0.5;
 let stepIndex = 0;
 // 電池残量: 気泡蓄積で電圧低下するが、ダニエル電池と同じく時間で消耗もする
@@ -1121,6 +1123,7 @@ function draw() {
     if (prev < 1 && electrodeAnim >= 1 && !hasStarted && mode === MODES.AUTO && chargeLevel > 0) {
       playing = true;
       hasStarted = true;
+      reactionStartFrame = frameCount; // ramp-up 開始
       document.getElementById('play-btn').textContent = '⏸ 止める';
       activeFlags.zn = true;
       activeFlags.e = true;
@@ -1146,7 +1149,15 @@ function draw() {
   // ===== Animations
   const animActive = (mode === MODES.AUTO) ? playing : true;
   const direction = 1;
-  const dt = (animActive ? 1 : 0) * speedMul;
+  // 反応開始から 3秒かけて反応速度を 0.15 → 1.0 にランプアップ
+  // (電極を入れた瞬間に Zn²⁺ が大量に溶け出すのを抑える)
+  let rampFactor = 1.0;
+  if (hasStarted && reactionStartFrame >= 0) {
+    const RAMP_FRAMES = 180;
+    const elapsed = frameCount - reactionStartFrame;
+    rampFactor = Math.min(1, 0.15 + (elapsed / RAMP_FRAMES) * 0.85);
+  }
+  const dt = (animActive ? 1 : 0) * speedMul * rampFactor;
 
   // Charge level: AUTO で playing 中、または stuckBubble の蓄積で減る
   if (mode === MODES.AUTO && animActive) {
@@ -1754,10 +1765,11 @@ document.getElementById('play-btn').addEventListener('click', () => {
   playing = !playing;
   if (playing) {
     hasStarted = true;
+    reactionStartFrame = frameCount; // ramp-up 再スタート
   } else {
     // ⏸ = 反応を止めて塩酸 (H⁺/Cl⁻) だけの状態に戻す
-    // (電極を取り出すイメージ。電極自体は液中に残ったまま)
     hasStarted = false;
+    reactionStartFrame = -1;
     zn2Accumulated = [];
     stuckBubbles = [];
     risingBubbles = [];
@@ -1790,6 +1802,7 @@ document.getElementById('polish-btn').addEventListener('click', () => {
 document.getElementById('reset-btn').addEventListener('click', () => {
   playing = false;
   hasStarted = false;
+  reactionStartFrame = -1;
   electrodesIn = false;  // 電極を取り出して塩酸だけの初期状態に戻す
   electrodeAnim = 0;
   document.getElementById('play-btn').textContent = '▶ 動かす';
