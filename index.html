@@ -1330,9 +1330,10 @@ function drawBeaker(L) {
 
 function drawBeakerFrame(L) {
   noFill();
-  stroke(160, 150, 130, 120);  // 薄く: 200→120
-  strokeWeight(1.8);            // 細く: 3→1.8
+  stroke(160, 150, 130, 120);
+  strokeWeight(1.8);
   rect(L.beakerX, L.beakerY, L.beakerW, L.beakerH, 4, 4, 14, 14);
+  noStroke(); // 後続の text 描画に縁取りが付かないように
 }
 
 function drawWires(L) {
@@ -1476,11 +1477,15 @@ function drawElectrode(x, L, kind, label, sign) {
 }
 
 function drawBeakerLabel(L) {
+  // 重要: drawBeakerFrame が stroke を設定したまま終わるため、
+  // ここで明示的に noStroke() を呼ばないと電極なし時のラベルに
+  // 縁取りが付いて袋文字風になってしまう (電極あり時は drawElectrode が
+  // 先に noStroke を呼ぶので縁取りなし) → 統一するため必須
+  noStroke();
   textAlign(CENTER, BOTTOM);
   textSize(Math.max(12, canvasW / 78));
   textStyle(BOLD);
   fill(80, 70, 50);
-  // 容器枠から少し離して「囲われている」感を解消 (22→32)
   text('うすい塩酸（HCl 水溶液）', L.beakerX + L.beakerW / 2, L.beakerY + L.beakerH + 32);
 }
 
