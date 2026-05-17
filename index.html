@@ -1521,14 +1521,18 @@ function drawElectronAt(d, L) {
 }
 
 function drawZn2(p, L) {
-  const liquidTop = L.liquidTopY + 8;
-  const liquidBot = L.liquidBottomY - 15;
-  const startY = lerp(liquidTop, liquidBot, p.surfaceY);
+  // 円の半径を考慮して液中の安全領域を計算 (はみ出し防止)
+  const r = Math.max(22, canvasW * 0.024);
+  const safeTop = L.liquidTopY + r / 2 + 4;
+  const safeBot = L.liquidBottomY - r / 2 - 4;
+  const startY = lerp(safeTop, safeBot, p.surfaceY);
   const startX = L.znElecX + L.electrodeW * 0.55;
   const endX = L.znElecX + L.electrodeW * 0.55 + (L.cuElecX - L.znElecX) * p.driftAmount * 0.4;
   const easedT = 1 - Math.pow(1 - p.t, 2.2);
   const x = lerp(startX, endX, easedT);
-  const y = startY + p.t * 24 + Math.sin(p.t * Math.PI * 2.5 + p.lifetime * 3) * 5;
+  let y = startY + p.t * 24 + Math.sin(p.t * Math.PI * 2.5 + p.lifetime * 3) * 5;
+  // y を clamp して絶対にはみ出ない
+  y = Math.max(safeTop, Math.min(safeBot, y));
   const alpha = (p.t < 0.20 ? p.t / 0.20 : (p.t > 0.85 ? (1 - p.t) / 0.15 : 1)) * 255;
   drawIonCircle(x, y, 'Zn²⁺', '#E8A040', alpha);
 }
