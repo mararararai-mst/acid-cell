@@ -1691,17 +1691,33 @@ function drawStuckBubble(b, L) {
   ellipse(surfaceX - r * 0.3, y - r * 0.3, r * 0.55, r * 0.4);
 }
 
+/* ラベルを器の中に必ず収める: 実測して必要なら縮める */
+function fitText(label, maxW, baseSize) {
+  textSize(baseSize);
+  const w = textWidth(label);
+  if (w > maxW) textSize(baseSize * (maxW / w));
+}
+
 function drawIonCircle(x, y, label, colorHex, alpha) {
-  noStroke();
   const c = color(colorHex);
   c.setAlpha(alpha);
+  /* d は直径。白ふち＋影＋実測フィット（daniel-cell と統一） */
+  const d = Math.max(26, canvasW * 0.028);
+  const dc = drawingContext;
+  dc.save();
+  dc.shadowColor = 'rgba(60,50,80,0.25)';
+  dc.shadowBlur = 4;
+  dc.shadowOffsetY = 2;
+  stroke(255, 255, 255, Math.min(230, alpha));
+  strokeWeight(2);
   fill(c);
-  const r = Math.max(22, canvasW * 0.024);
-  ellipse(x, y, r, r);
+  ellipse(x, y, d, d);
+  dc.restore();
+  noStroke();
   fill(255, alpha);
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
-  textSize(r * 0.48);  // 0.38 → 0.48 (一回り大きく)
+  fitText(label, d * 0.78, d * 0.44);
   text(label, x, y);
 }
 
